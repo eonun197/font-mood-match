@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Mood Match</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f3ef;
+            color: #222;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 48px 20px 16px;
+        }
+        .header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #111;
+        }
+        .header p { color: #999; margin-top: 8px; font-size: 14px; }
+
+        .mood-section {
+            max-width: 700px;
+            margin: 0 auto 32px;
+            padding: 0 20px;
+        }
+        .mood-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #999;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .mood-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .mood-tag {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .mood-tag:hover { border-color: #aaa; color: #333; }
+        .mood-tag.selected {
+            background: #3b82f6;
+            color: #fff;
+            border-color: #3b82f6;
+            font-weight: 600;
+        }
+
+        /* ===== TABS ===== */
+        .tab-bar {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            max-width: 400px;
+            margin: 0 auto 32px;
+            background: #e8e5e0;
+            border-radius: 12px;
+            padding: 4px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            border-radius: 10px;
+            color: #999;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { background: #fff; color: #222; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .tab-btn:hover:not(.active) { color: #555; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ===== PREVIEW TAB ===== */
+        .preview-tab {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+        .preview-upload {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+        .preview-upload:hover { border-color: #999; background: #fafafa; }
+        .preview-upload.has-image { border-style: solid; padding: 0; overflow: hidden; border-radius: 12px; }
+        .preview-upload .icon { font-size: 32px; margin-bottom: 8px; }
+        .preview-upload .text { color: #999; font-size: 13px; }
+        #previewImageInput { display: none; }
+
+        .preview-canvas-wrap {
+            position: relative;
+            display: none;
+            margin-bottom: 20px;
+        }
+        .preview-canvas-wrap.visible { display: block; }
+        .preview-canvas {
+            width: 100%;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .preview-controls {
+            display: none;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .preview-controls.visible { display: flex; }
+        .preview-controls input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #222;
+            font-size: 14px;
+            outline: none;
+        }
+        .preview-controls input[type="text"]:focus { border-color: #3b82f6; }
+        .preview-controls input[type="text"]::placeholder { color: #bbb; }
+        .preview-controls select {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #222;
+            font-size: 14px;
+            outline: none;
+            min-width: 200px;
+        }
+
+        .preview-options {
+            display: none;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .preview-options.visible { display: flex; }
+        .preview-options label {
+            color: #666;
+            font-size: 13px;
+        }
+        .preview-options input[type="range"] {
+            width: 120px;
+        }
+        .placement-btn.active { background: #3b82f6 !important; color: #fff !important; border-color: #3b82f6 !important; }
+        .preview-options input[type="color"] {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: none;
+            cursor: pointer;
+        }
+
+        .search-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .search-btn:hover { opacity: 0.85; }
+        .search-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .loading-section {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .loading-section.visible { display: block; }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #ddd;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: #888; font-size: 14px; }
+        .loading-progress { color: #aaa; font-size: 13px; margin-top: 8px; }
+
+        .results-section {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+        .results-section.visible { display: block; }
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .results-title { font-size: 20px; font-weight: 700; }
+        .results-count { color: #666; font-size: 14px; }
+        .refresh-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px 20px;
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .refresh-btn:hover { background: #eee; color: #333; border-color: #bbb; }
+
+        #fontCards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .font-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 20px;
+            transition: border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .font-card:hover { border-color: #bbb; }
+        .font-card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .font-name { font-size: 14px; font-weight: 600; color: #222; }
+        .font-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+        .font-tag {
+            background: #f0f0f0;
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-size: 10px;
+            color: #888;
+        }
+        .font-tag.match { background: #e8f5e9; color: #2e7d32; }
+        .font-preview {
+            background: #fafaf8;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 10px;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        .font-preview-text {
+            font-size: 22px;
+            line-height: 1.4;
+            word-break: keep-all;
+            width: 100%;
+            color: #222;
+        }
+        .font-reason {
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .font-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .copy-btn {
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            color: #666;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover { background: #e0e0e0; color: #333; }
+        @media (max-width: 900px) {
+            #fontCards { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 500px) {
+            #fontCards { grid-template-columns: 1fr; }
+        }
+        .copy-btn.copied { background: #e8f5e9; color: #2e7d32; }
+
+        .pairing-section {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+        .pairing-section.visible { display: block; }
+        .pairing-title { font-size: 20px; font-weight: 700; margin-bottom: 24px; }
+        .pairing-card {
+            background: #141414;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 16px;
+        }
+        .pairing-heading { font-size: 32px; margin-bottom: 12px; line-height: 1.3; }
+        .pairing-body { font-size: 16px; line-height: 1.8; color: #aaa; }
+        .pairing-label { margin-top: 16px; font-size: 12px; color: #555; }
+
+        .custom-text-section {
+            max-width: 900px;
+            margin: 0 auto 24px;
+            padding: 0 20px;
+            display: none;
+        }
+        .custom-text-section.visible { display: block; }
+        .custom-text-input {
+            width: 100%;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #222;
+            font-size: 14px;
+            outline: none;
+        }
+        .custom-text-input:focus { border-color: #3b82f6; }
+        .custom-text-input::placeholder { color: #bbb; }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 28px; }
+            .font-preview-text { font-size: 22px; }
+            .pairing-heading { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Font Mood Match</h1>
+    <p>분위기를 선택하면, 내 컴퓨터의 폰트 중 어울리는 것을 추천해드립니다</p>
+</div>
+
+<div class="tab-bar">
+    <button class="tab-btn active" data-tab="recommend">폰트 추천</button>
+    <button class="tab-btn" data-tab="preview">이미지 미리보기</button>
+</div>
+
+<!-- TAB 1: 추천 -->
+<div class="tab-content active" id="tab-recommend">
+<div class="mood-section">
+    <div class="mood-label">분위기 선택</div>
+    <div class="mood-tags" id="moodTags">
+        <span class="mood-tag" data-mood="따뜻한">따뜻한</span>
+        <span class="mood-tag" data-mood="차가운">차가운</span>
+        <span class="mood-tag" data-mood="모던한">모던한</span>
+        <span class="mood-tag" data-mood="레트로">레트로</span>
+        <span class="mood-tag" data-mood="귀여운">귀여운</span>
+        <span class="mood-tag" data-mood="고급스러운">고급스러운</span>
+        <span class="mood-tag" data-mood="캐주얼한">캐주얼한</span>
+        <span class="mood-tag" data-mood="격식있는">격식있는</span>
+        <span class="mood-tag" data-mood="자연스러운">자연스러운</span>
+        <span class="mood-tag" data-mood="강렬한">강렬한</span>
+        <span class="mood-tag" data-mood="미니멀한">미니멀한</span>
+        <span class="mood-tag" data-mood="손글씨">손글씨</span>
+        <span class="mood-tag" data-mood="부드러운">부드러운</span>
+        <span class="mood-tag" data-mood="단단한">단단한</span>
+        <span class="mood-tag" data-mood="몽환적인">몽환적인</span>
+        <span class="mood-tag" data-mood="유쾌한">유쾌한</span>
+    </div>
+
+    <button class="search-btn" id="searchBtn" disabled>폰트 추천받기</button>
+</div>
+
+<div class="loading-section" id="loadingSection">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">폰트를 분석하고 있습니다...</div>
+    <div class="loading-progress" id="loadingProgress"></div>
+</div>
+
+<div class="custom-text-section" id="customTextSection">
+    <input type="text" class="custom-text-input" id="customTextInput"
+           placeholder="폰트를 미리볼 문장을 자유롭게 입력해보세요" value="가나다라 Typography 123">
+</div>
+
+<div class="results-section" id="resultsSection">
+    <div class="results-header">
+        <div class="results-title">추천 폰트</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <div class="results-count" id="resultsCount"></div>
+            <button class="refresh-btn" id="refreshBtn">다시 추천받기</button>
+        </div>
+    </div>
+    <div id="fontCards"></div>
+</div>
+</div><!-- end tab-recommend -->
+
+<!-- TAB 2: 이미지 미리보기 -->
+<div class="tab-content" id="tab-preview">
+<div class="preview-tab">
+    <div class="preview-upload" id="previewUpload">
+        <div id="previewUploadContent">
+            <div class="icon">🖼</div>
+            <div class="text">배경 이미지를 드래그하거나 클릭해서 업로드</div>
+        </div>
+    </div>
+    <input type="file" id="previewImageInput" accept="image/*">
+
+    <div class="preview-controls" id="previewControls">
+        <input type="text" id="overlayText" placeholder="이미지 위에 올릴 텍스트 입력" value="디자인의 본질을 탐구하다">
+        <select id="fontSelect">
+            <option value="">폰트를 선택하세요</option>
+        </select>
+    </div>
+
+    <div class="preview-options" id="previewOptions">
+        <label>크기</label>
+        <input type="range" id="fontSize" min="16" max="120" value="48">
+        <label>색상</label>
+        <input type="color" id="fontColor" value="#ffffff">
+        <label>배치</label>
+        <div style="display:flex;gap:4px;">
+            <button class="placement-btn active" data-placement="title" style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px 14px;font-size:12px;color:#666;cursor:pointer;">제목</button>
+            <button class="placement-btn" data-placement="body" style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px 14px;font-size:12px;color:#666;cursor:pointer;">본문</button>
+        </div>
+    </div>
+
+    <div class="preview-canvas-wrap" id="previewCanvasWrap">
+        <canvas class="preview-canvas" id="previewCanvas"></canvas>
+    </div>
+</div>
+</div><!-- end tab-preview -->
+
+<script>
+// ===== STATE =====
+let selectedMoods = [];
+let localFonts = [];
+let recommendedFonts = [];
+
+// ===== MOOD TAGS =====
+document.querySelectorAll('.mood-tag').forEach(tag => {
+    tag.addEventListener('click', () => {
+        tag.classList.toggle('selected');
+        const mood = tag.dataset.mood;
+        if (tag.classList.contains('selected')) {
+            selectedMoods.push(mood);
+        } else {
+            selectedMoods = selectedMoods.filter(m => m !== mood);
+        }
+        document.getElementById('searchBtn').disabled = selectedMoods.length === 0;
+    });
+});
+
+document.getElementById('searchBtn').addEventListener('click', startRecommendation);
+
+// ===== TABS =====
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+
+        // Load recommended fonts into preview tab
+        if (btn.dataset.tab === 'preview') {
+            loadRecommendedFontSelect();
+        }
+    });
+});
+
+// Simple hash for random tiebreaking
+function hashStr(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
+}
+
+// ===== FONT DATABASE =====
+// Known fonts with pre-tagged moods
+const FONT_DB = {
+    // === 나눔 ===
+    '나눔고딕': { moods: ['모던한', '미니멀한', '부드러운'], type: 'gothic', usage: '본문용' },
+    '나눔고딕OTF': { moods: ['모던한', '미니멀한', '부드러운'], type: 'gothic', usage: '본문용' },
+    '나눔명조': { moods: ['격식있는', '고급스러운', '차가운'], type: 'myungjo', usage: '본문용' },
+    '나눔명조OTF': { moods: ['격식있는', '고급스러운', '차가운'], type: 'myungjo', usage: '본문용' },
+    '나눔바른고딕OTF': { moods: ['미니멀한', '모던한', '부드러운'], type: 'gothic', usage: '본문용' },
+    '나눔바른펜OTF': { moods: ['손글씨', '자연스러운', '따뜻한'], type: 'handwriting', usage: '제목용' },
+    '나눔손글씨 펜': { moods: ['손글씨', '캐주얼한', '자연스러운'], type: 'handwriting', usage: '제목용' },
+    '나눔손글씨 붓': { moods: ['손글씨', '강렬한', '레트로'], type: 'handwriting', usage: '제목용' },
+    '나눔스퀘어OTF': { moods: ['모던한', '단단한', '미니멀한'], type: 'gothic', usage: '제목용' },
+    '나눔스퀘어 네오 OTF': { moods: ['모던한', '미니멀한', '차가운'], type: 'gothic', usage: '제목/본문 겸용' },
+    '나눔스퀘어라운드OTF': { moods: ['부드러운', '귀여운', '따뜻한'], type: 'gothic', usage: '제목용' },
+    '나눔휴먼OTF': { moods: ['자연스러운', '따뜻한', '부드러운'], type: 'gothic', usage: '본문용' },
+
+    // === 산돌 고딕 ===
+    'Apple SD 산돌고딕 Neo': { moods: ['모던한', '미니멀한', '단단한'], type: 'gothic', usage: '본문용' },
+    'Sandoll 고딕Neo1': { moods: ['모던한', '미니멀한', '단단한'], type: 'gothic', usage: '제목/본문 겸용' },
+    'Sandoll 고딕Neo2': { moods: ['모던한', '미니멀한', '차가운'], type: 'gothic', usage: '제목/본문 겸용' },
+    'Sandoll 고딕Neo3': { moods: ['모던한', '미니멀한', '차가운'], type: 'gothic', usage: '제목/본문 겸용' },
+    'Sandoll 고딕NeoRound': { moods: ['부드러운', '귀여운', '따뜻한'], type: 'gothic', usage: '제목용' },
+    'Sandoll 고딕NeoCond': { moods: ['모던한', '단단한', '강렬한'], type: 'gothic', usage: '제목용' },
+    'Sandoll 고딕NeoExt': { moods: ['모던한', '강렬한', '단단한'], type: 'gothic', usage: '제목용' },
+
+    // === 산돌 명조 ===
+    'Sandoll 명조': { moods: ['격식있는', '고급스러운', '레트로'], type: 'myungjo', usage: '본문용' },
+    'Sandoll 명조Neo1': { moods: ['고급스러운', '격식있는', '모던한'], type: 'myungjo', usage: '제목/본문 겸용' },
+
+    // === 산돌 감성/특수 ===
+    'Sandoll 격동고딕': { moods: ['강렬한', '레트로', '단단한'], type: 'display', usage: '제목용' },
+    'Sandoll 격동굴림': { moods: ['레트로', '따뜻한', '자연스러운'], type: 'display', usage: '제목용' },
+    'Sandoll 격동명조': { moods: ['레트로', '격식있는', '강렬한'], type: 'myungjo', usage: '제목용' },
+    'Sandoll 겨울밤': { moods: ['몽환적인', '차가운', '고급스러운'], type: 'display', usage: '제목용' },
+    'Sandoll 늦봄': { moods: ['따뜻한', '자연스러운', '부드러운'], type: 'display', usage: '제목용' },
+    'Sandoll 둥굴림': { moods: ['귀여운', '부드러운', '캐주얼한'], type: 'gothic', usage: '제목용' },
+    'Sandoll 둥굴림2': { moods: ['귀여운', '부드러운', '캐주얼한'], type: 'gothic', usage: '제목용' },
+    'Sandoll 마루': { moods: ['자연스러운', '부드러운', '따뜻한'], type: 'gothic', usage: '본문용' },
+    'Sandoll 광수명조': { moods: ['레트로', '자연스러운', '따뜻한'], type: 'myungjo', usage: '제목용' },
+    'Sandoll 단편선 바탕': { moods: ['격식있는', '레트로', '고급스러운'], type: 'myungjo', usage: '본문용' },
+    'Sandoll 바보사랑': { moods: ['귀여운', '유쾌한', '캐주얼한'], type: 'display', usage: '제목용' },
+    'Sandoll 별꽃': { moods: ['몽환적인', '귀여운', '부드러운'], type: 'display', usage: '제목용' },
+    'Sandoll 별밤': { moods: ['몽환적인', '차가운', '고급스러운'], type: 'display', usage: '제목용' },
+    'Sandoll 별이될꺼야': { moods: ['몽환적인', '귀여운', '따뜻한'], type: 'display', usage: '제목용' },
+    'Sandoll 별이샤방샤방': { moods: ['귀여운', '유쾌한', '몽환적인'], type: 'display', usage: '제목용' },
+    'Sandoll 별표고무': { moods: ['유쾌한', '레트로', '캐주얼한'], type: 'display', usage: '제목용' },
+    'Sandoll 사랑고백': { moods: ['따뜻한', '부드러운', '손글씨'], type: 'handwriting', usage: '제목용' },
+    'Sandoll 삼립호빵체': { moods: ['귀여운', '유쾌한', '따뜻한'], type: 'display', usage: '제목용' },
+    'Sandoll 초코푸딩': { moods: ['귀여운', '따뜻한', '캐주얼한'], type: 'display', usage: '제목용' },
+    'Sandoll 캔버스': { moods: ['손글씨', '자연스러운', '캐주얼한'], type: 'handwriting', usage: '제목용' },
+    'Sandoll 커피앤도넛': { moods: ['따뜻한', '캐주얼한', '부드러운'], type: 'display', usage: '제목용' },
+    'Sandoll 하늘구름': { moods: ['몽환적인', '부드러운', '자연스러운'], type: 'display', usage: '제목용' },
+    'Sandoll 국대떡볶이': { moods: ['유쾌한', '강렬한', '캐주얼한'], type: 'display', usage: '제목용' },
+    'Sandoll 온고딕': { moods: ['부드러운', '따뜻한', '모던한'], type: 'gothic', usage: '본문용' },
+
+    // === Pretendard ===
+    'Pretendard': { moods: ['모던한', '미니멀한', '차가운'], type: 'gothic', usage: '제목/본문 겸용' },
+
+    // === Noto ===
+    'Noto Sans KR': { moods: ['모던한', '미니멀한', '단단한'], type: 'gothic', usage: '제목/본문 겸용' },
+    'Noto Serif CJK KR': { moods: ['격식있는', '고급스러운', '모던한'], type: 'myungjo', usage: '본문용' },
+
+    // === 본고딕/본명조 ===
+    '본고딕': { moods: ['모던한', '미니멀한', '단단한'], type: 'gothic', usage: '제목/본문 겸용' },
+    '본명조': { moods: ['격식있는', '고급스러운', '모던한'], type: 'myungjo', usage: '본문용' },
+
+    // === 마루 부리 ===
+    '마루 부리OTF': { moods: ['고급스러운', '모던한', '격식있는'], type: 'myungjo', usage: '본문용' },
+
+    // === 배민 ===
+    '배민 을지로10년후체 OTF': { moods: ['레트로', '강렬한', '유쾌한'], type: 'display', usage: '제목용' },
+
+    // === 카페24 ===
+    'Cafe24 Meongi': { moods: ['귀여운', '캐주얼한', '유쾌한'], type: 'display', usage: '제목용' },
+    'Cafe24NyangiB': { moods: ['귀여운', '부드러운', '캐주얼한'], type: 'display', usage: '제목용' },
+    '카페24 모야모야 OTF': { moods: ['귀여운', '몽환적인', '유쾌한'], type: 'display', usage: '제목용' },
+    '카페24 슈퍼매직 OTF': { moods: ['강렬한', '유쾌한', '캐주얼한'], type: 'display', usage: '제목용' },
+
+    // === 교보 손글씨 ===
+    '교보 손글씨 2019': { moods: ['손글씨', '따뜻한', '자연스러운'], type: 'handwriting', usage: '제목용' },
+    '교보 손글씨 2020 박도연': { moods: ['손글씨', '부드러운', '자연스러운'], type: 'handwriting', usage: '제목용' },
+    '교보 손글씨 2021 성지영': { moods: ['손글씨', '캐주얼한', '따뜻한'], type: 'handwriting', usage: '제목용' },
+    '교보 손글씨 2022 김혜남': { moods: ['손글씨', '자연스러운', '따뜻한'], type: 'handwriting', usage: '제목용' },
+    '교보 손글씨 2023 우선아': { moods: ['손글씨', '부드러운', '캐주얼한'], type: 'handwriting', usage: '제목용' },
+    '교보 손글씨 2024 박서우': { moods: ['손글씨', '자연스러운', '따뜻한'], type: 'handwriting', usage: '제목용' },
+
+    // === KCC ===
+    'KCC-은영체': { moods: ['손글씨', '부드러운', '자연스러운'], type: 'handwriting', usage: '제목용' },
+    'KCC-김훈체': { moods: ['손글씨', '격식있는', '단단한'], type: 'handwriting', usage: '제목용' },
+    'KCC-김환기체': { moods: ['손글씨', '자연스러운', '몽환적인'], type: 'handwriting', usage: '제목용' },
+    'KCC-간판체': { moods: ['레트로', '강렬한', '유쾌한'], type: 'display', usage: '제목용' },
+    'KCC-안창호': { moods: ['격식있는', '단단한', '레트로'], type: 'display', usage: '제목용' },
+    'KCC-손기정체': { moods: ['강렬한', '단단한', '레트로'], type: 'display', usage: '제목용' },
+    'KCC-정범체': { moods: ['격식있는', '레트로', '단단한'], type: 'display', usage: '제목용' },
+    'KCC-한빛': { moods: ['따뜻한', '부드러운', '자연스러운'], type: 'display', usage: '제목용' },
+    'KCC도담도담체': { moods: ['귀여운', '따뜻한', '부드러운'], type: 'display', usage: '제목용' },
+    'KCC무럭무럭': { moods: ['귀여운', '자연스러운', '유쾌한'], type: 'display', usage: '제목용' },
+    'KCC방정환체': { moods: ['따뜻한', '레트로', '자연스러운'], type: 'display', usage: '제목용' },
+    'KCC안중근체': { moods: ['단단한', '격식있는', '강렬한'], type: 'display', usage: '제목용' },
+    'KCC임권택체': { moods: ['격식있는', '레트로', '고급스러운'], type: 'display', usage: '제목용' },
+    'KCC차쌤체': { moods: ['캐주얼한', '유쾌한', '따뜻한'], type: 'display', usage: '제목용' },
+    'KCC혜림체': { moods: ['귀여운', '손글씨', '캐주얼한'], type: 'handwriting', usage: '제목용' },
+
+    // === G마켓 ===
+    'G마켓 산스': { moods: ['모던한', '캐주얼한', '유쾌한'], type: 'gothic', usage: '제목용' },
+
+    // === 에스코어 드림 ===
+    '에스코어 드림': { moods: ['모던한', '미니멀한', '단단한'], type: 'gothic', usage: '제목/본문 겸용' },
+
+    // === 야놀자 ===
+    '야놀자 야체 OTF': { moods: ['유쾌한', '캐주얼한', '강렬한'], type: 'display', usage: '제목용' },
+
+    // === 여기어때 ===
+    '여기어때 잘난체': { moods: ['강렬한', '유쾌한', '단단한'], type: 'display', usage: '제목용' },
+    '여기어때 잘난체 2': { moods: ['강렬한', '유쾌한', '단단한'], type: 'display', usage: '제목용' },
+    '여기어때 잘난체 고딕': { moods: ['모던한', '단단한', '강렬한'], type: 'gothic', usage: '제목용' },
+
+    // === 넥슨 ===
+    '넥슨 카트 고딕 OTF': { moods: ['캐주얼한', '유쾌한', '모던한'], type: 'gothic', usage: '제목용' },
+    '넥슨 풋볼고딕': { moods: ['강렬한', '단단한', '캐주얼한'], type: 'gothic', usage: '제목용' },
+    '넥슨Lv1고딕 OTF': { moods: ['귀여운', '캐주얼한', '유쾌한'], type: 'gothic', usage: '제목용' },
+    '넥슨Lv2고딕 OTF': { moods: ['모던한', '캐주얼한', '미니멀한'], type: 'gothic', usage: '제목/본문 겸용' },
+
+    // === 기타 한글 ===
+    '이롭게 바탕체 OTF': { moods: ['고급스러운', '격식있는', '부드러운'], type: 'myungjo', usage: '본문용' },
+    '리디바탕': { moods: ['격식있는', '고급스러운', '차가운'], type: 'myungjo', usage: '본문용' },
+    '런드리고딕OTF': { moods: ['캐주얼한', '부드러운', '자연스러운'], type: 'gothic', usage: '제목용' },
+    '감탄로드돋움체': { moods: ['부드러운', '모던한', '캐주얼한'], type: 'gothic', usage: '본문용' },
+    '감탄로드바탕체': { moods: ['고급스러운', '격식있는', '부드러운'], type: 'myungjo', usage: '본문용' },
+    '이서윤체': { moods: ['귀여운', '손글씨', '캐주얼한'], type: 'handwriting', usage: '제목용' },
+    '제주고딕OTF': { moods: ['자연스러운', '부드러운', '모던한'], type: 'gothic', usage: '본문용' },
+    '제주명조OTF': { moods: ['자연스러운', '고급스러운', '따뜻한'], type: 'myungjo', usage: '본문용' },
+    'HS봄바람체': { moods: ['따뜻한', '자연스러운', '부드러운'], type: 'display', usage: '제목용' },
+    '기후위기-한글': { moods: ['모던한', '강렬한', '단단한'], type: 'display', usage: '제목용' },
+    '독립서체 윤동주 별헤는밤 GS': { moods: ['몽환적인', '격식있는', '자연스러운'], type: 'display', usage: '제목용' },
+    '독립서체 윤동주 서시 GS': { moods: ['몽환적인', '고급스러운', '자연스러운'], type: 'display', usage: '제목용' },
+    'Tlab윤동주': { moods: ['몽환적인', '자연스러운', '부드러운'], type: 'handwriting', usage: '제목용' },
+    '한컴 말랑말랑': { moods: ['귀여운', '부드러운', '캐주얼한'], type: 'gothic', usage: '제목용' },
+    '푸라닭 젠틀 고딕 OTF': { moods: ['모던한', '고급스러운', '미니멀한'], type: 'gothic', usage: '제목용' },
+    '망고보드 별별체': { moods: ['귀여운', '유쾌한', '캐주얼한'], type: 'display', usage: '제목용' },
+    'BOKEH': { moods: ['몽환적인', '모던한', '부드러운'], type: 'display', usage: '제목용' },
+
+    // === 바탕/돋움/굴림 시스템 ===
+    'KoPub바탕체': { moods: ['격식있는', '고급스러운', '단단한'], type: 'myungjo', usage: '본문용' },
+    'KoPub돋움체': { moods: ['모던한', '미니멀한', '단단한'], type: 'gothic', usage: '본문용' },
+    '경기천년바탕OTF': { moods: ['격식있는', '레트로', '고급스러운'], type: 'myungjo', usage: '본문용' },
+
+    // === 영문 유명 ===
+    'Helvetica': { moods: ['모던한', '미니멀한', '차가운'], type: 'gothic', usage: '제목/본문 겸용' },
+    'Helvetica Neue': { moods: ['모던한', '미니멀한', '차가운'], type: 'gothic', usage: '제목/본문 겸용' },
+    'Arial': { moods: ['모던한', '미니멀한', '캐주얼한'], type: 'gothic', usage: '본문용' },
+    'Futura': { moods: ['모던한', '미니멀한', '차가운'], type: 'gothic', usage: '제목용' },
+    'Avenir': { moods: ['모던한', '부드러운', '미니멀한'], type: 'gothic', usage: '제목/본문 겸용' },
+    'Avenir Next': { moods: ['모던한', '미니멀한', '단단한'], type: 'gothic', usage: '제목/본문 겸용' },
+    'Baskerville': { moods: ['격식있는', '고급스러운', '레트로'], type: 'serif', usage: '본문용' },
+    'Bodoni 72': { moods: ['고급스러운', '격식있는', '강렬한'], type: 'serif', usage: '제목용' },
+    'Georgia': { moods: ['격식있는', '따뜻한', '고급스러운'], type: 'serif', usage: '본문용' },
+    'Garamond': { moods: ['고급스러운', '격식있는', '레트로'], type: 'serif', usage: '본문용' },
+    'Didot': { moods: ['고급스러운', '격식있는', '차가운'], type: 'serif', usage: '제목용' },
+    'Palatino': { moods: ['격식있는', '고급스러운', '따뜻한'], type: 'serif', usage: '본문용' },
+    'Copperplate': { moods: ['격식있는', '고급스러운', '단단한'], type: 'serif', usage: '제목용' },
+    'American Typewriter': { moods: ['레트로', '캐주얼한', '따뜻한'], type: 'serif', usage: '제목용' },
+    'Courier New': { moods: ['레트로', '단단한', '격식있는'], type: 'mono', usage: '본문용' },
+    'Comic Sans MS': { moods: ['귀여운', '캐주얼한', '유쾌한'], type: 'handwriting', usage: '제목용' },
+    'Bebas Neue': { moods: ['강렬한', '모던한', '단단한'], type: 'gothic', usage: '제목용' },
+    'Aleo': { moods: ['따뜻한', '부드러운', '모던한'], type: 'serif', usage: '본문용' },
+};
+
+// ===== KEYWORD-BASED MOOD INFERENCE =====
+const KEYWORD_MOODS = [
+    // Type keywords
+    { pattern: /명조|바탕|부리|Serif|Batang/i, moods: ['격식있는', '고급스러운'], type: 'myungjo' },
+    { pattern: /고딕|돋움|Gothic|Sans/i, moods: ['모던한', '미니멀한'], type: 'gothic' },
+    { pattern: /손글씨|펜|필기|Hand|Script|Pen/i, moods: ['손글씨', '자연스러운', '따뜻한'], type: 'handwriting' },
+    { pattern: /둥근|둥굴|Round/i, moods: ['부드러운', '귀여운', '따뜻한'], type: 'gothic' },
+
+    // Mood keywords
+    { pattern: /봄|꽃|사랑|하트|봄바람/i, moods: ['따뜻한', '부드러운', '자연스러운'] },
+    { pattern: /별|밤|달|겨울|구름|하늘/i, moods: ['몽환적인', '차가운', '고급스러운'] },
+    { pattern: /귀여|어린|키즈|아이|도담|무럭|호빵/i, moods: ['귀여운', '유쾌한', '캐주얼한'] },
+    { pattern: /격동|독립|안중근|강|Bold|Heavy|Black/i, moods: ['강렬한', '단단한'] },
+    { pattern: /Light|Thin|가는|얇은|옅은/i, moods: ['부드러운', '미니멀한', '몽환적인'] },
+    { pattern: /떡볶이|치킨|호빵|도넛|커피|초코|맛/i, moods: ['유쾌한', '캐주얼한', '따뜻한'] },
+    { pattern: /레트로|옛|Retro|Old|Classic/i, moods: ['레트로', '격식있는'] },
+    { pattern: /모던|Modern|Neo|New/i, moods: ['모던한', '미니멀한'] },
+];
+
+// ===== CANVAS FONT ANALYSIS =====
+function analyzeFontShape(fontFamily) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 80;
+    const ctx = canvas.getContext('2d');
+
+    // Render sample text
+    ctx.fillStyle = '#000';
+    ctx.font = `40px "${fontFamily}"`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText('가나', 10, 40);
+
+    const imageData = ctx.getImageData(0, 0, 200, 80);
+    const pixels = imageData.data;
+
+    // Count filled pixels (ink coverage)
+    let filledPixels = 0;
+    let totalChecked = 0;
+    for (let i = 3; i < pixels.length; i += 4) {
+        if (pixels[i] > 30) filledPixels++;
+        totalChecked++;
+    }
+    const coverage = filledPixels / totalChecked;
+
+    // Detect stroke variation (check horizontal vs vertical)
+    // High variation = serif-like, Low variation = gothic-like
+    let edgePixels = 0;
+    for (let y = 0; y < 80; y++) {
+        for (let x = 1; x < 199; x++) {
+            const idx = (y * 200 + x) * 4 + 3;
+            const prev = pixels[idx - 4];
+            const curr = pixels[idx];
+            if (Math.abs(curr - prev) > 50) edgePixels++;
+        }
+    }
+    const edgeDensity = edgePixels / totalChecked;
+
+    return {
+        weight: coverage > 0.08 ? 'bold' : coverage > 0.05 ? 'medium' : 'light',
+        complexity: edgeDensity > 0.015 ? 'complex' : 'simple'
+    };
+}
+
+// ===== FONT CLASSIFICATION =====
+function classifyFont(fontFamily) {
+    // 1. Check known database (exact match)
+    if (FONT_DB[fontFamily]) {
+        return FONT_DB[fontFamily];
+    }
+
+    // 2. Check known database (partial match)
+    for (const [key, data] of Object.entries(FONT_DB)) {
+        if (fontFamily.includes(key) || key.includes(fontFamily)) {
+            return data;
+        }
+    }
+
+    // 3. Keyword-based inference
+    let inferredMoods = [];
+    let inferredType = null;
+    for (const rule of KEYWORD_MOODS) {
+        if (rule.pattern.test(fontFamily)) {
+            inferredMoods.push(...rule.moods);
+            if (rule.type && !inferredType) inferredType = rule.type;
+        }
+    }
+
+    // 4. Canvas-based analysis
+    const shape = analyzeFontShape(fontFamily);
+    if (shape.weight === 'bold') inferredMoods.push('강렬한', '단단한');
+    if (shape.weight === 'light') inferredMoods.push('부드러운', '미니멀한');
+    if (shape.complexity === 'complex') inferredMoods.push('고급스러운');
+    if (shape.complexity === 'simple') inferredMoods.push('미니멀한', '모던한');
+
+    // Deduplicate moods
+    const uniqueMoods = [...new Set(inferredMoods)].slice(0, 4);
+
+    if (uniqueMoods.length === 0) {
+        uniqueMoods.push('모던한', '미니멀한'); // fallback
+    }
+
+    return {
+        moods: uniqueMoods,
+        type: inferredType || 'unknown',
+        usage: inferredType === 'handwriting' || inferredType === 'display' ? '제목용' :
+               inferredType === 'myungjo' || inferredType === 'serif' ? '본문용' : '제목/본문 겸용'
+    };
+}
+
+// ===== SCORING =====
+function scoreFont(fontData, targetMoods) {
+    let score = 0;
+    const matchedMoods = [];
+
+    for (const mood of targetMoods) {
+        if (fontData.moods.includes(mood)) {
+            score += 25;
+            matchedMoods.push(mood);
+        }
+    }
+
+    // Bonus for having multiple matches
+    if (matchedMoods.length >= 3) score += 10;
+    if (matchedMoods.length >= 2) score += 5;
+
+    // Cap at 100
+    score = Math.min(score, 100);
+
+    return { score, matchedMoods };
+}
+
+// ===== FONT ACCESS =====
+function shouldSkipFont(family) {
+    if (family.startsWith('.')) return true;
+    if (family.includes('Fallback')) return true;
+    if (/^Apple (Braille|Symbols|Color Emoji)/.test(family)) return true;
+    if (/^(ZapfDingbats|Wingdings|Webdings)$/.test(family)) return true;
+    return false;
+}
+
+function canRenderKorean(fontFamily) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 100;
+    canvas.height = 50;
+    const ctx = canvas.getContext('2d');
+
+    ctx.font = `24px "${fontFamily}"`;
+    ctx.fillText('가', 10, 30);
+    const targetData = ctx.getImageData(0, 0, 100, 50).data;
+
+    ctx.clearRect(0, 0, 100, 50);
+    ctx.font = '24px "INVALID_FONT_NAME_12345"';
+    ctx.fillText('가', 10, 30);
+    const fallbackData = ctx.getImageData(0, 0, 100, 50).data;
+
+    let diff = 0;
+    for (let i = 0; i < targetData.length; i += 4) {
+        diff += Math.abs(targetData[i + 3] - fallbackData[i + 3]);
+    }
+    return diff > 100;
+}
+
+async function getLocalFonts() {
+    try {
+        const fonts = await window.queryLocalFonts();
+        const familyMap = new Map();
+        for (const font of fonts) {
+            if (!familyMap.has(font.family) && !shouldSkipFont(font.family)) {
+                familyMap.set(font.family, font);
+            }
+        }
+        return Array.from(familyMap.values());
+    } catch (e) {
+        alert('폰트 접근 권한이 필요합니다. Chrome 브라우저에서 사용해주세요.');
+        throw e;
+    }
+}
+
+// ===== MAIN FLOW =====
+async function startRecommendation() {
+    const loadingSection = document.getElementById('loadingSection');
+    const resultsSection = document.getElementById('resultsSection');
+    const customTextSection = document.getElementById('customTextSection');
+    const loadingProgress = document.getElementById('loadingProgress');
+
+    resultsSection.classList.remove('visible');
+    customTextSection.classList.remove('visible');
+    loadingSection.classList.add('visible');
+
+    try {
+        // Use cached fonts if already loaded
+        if (localFonts.length === 0) {
+            loadingProgress.textContent = '로컬 폰트 목록을 가져오는 중...';
+            localFonts = await getLocalFonts();
+        }
+        loadingProgress.textContent = `${localFonts.length}개 폰트 발견. 분석 중...`;
+
+        // Classify and score ALL fonts (Korean + English)
+        const scored = [];
+        for (const font of localFonts) {
+            const fontData = classifyFont(font.family);
+            const { score, matchedMoods } = scoreFont(fontData, selectedMoods);
+            if (score > 0) {
+                scored.push({
+                    fontFamily: font.family,
+                    score,
+                    mood_tags: matchedMoods.length > 0 ? matchedMoods : fontData.moods.slice(0, 3),
+                    reason: generateReason(font.family, fontData, matchedMoods),
+                    usage: fontData.usage,
+                    type: fontData.type
+                });
+            }
+        }
+
+        // Sort by score, then by known DB (prefer known fonts), then random for variety
+        const shuffleSeed = Date.now();
+        scored.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            const aKnown = FONT_DB[a.fontFamily] ? 1 : 0;
+            const bKnown = FONT_DB[b.fontFamily] ? 1 : 0;
+            if (bKnown !== aKnown) return bKnown - aKnown;
+            // Random tiebreak for variety on refresh
+            return (hashStr(a.fontFamily + shuffleSeed) % 100) - (hashStr(b.fontFamily + shuffleSeed) % 100);
+        });
+
+        recommendedFonts = scored.slice(0, 6);
+
+        loadingSection.classList.remove('visible');
+        displayResults();
+
+    } catch (e) {
+        loadingSection.classList.remove('visible');
+        alert('오류: ' + e.message);
+        console.error(e);
+    }
+}
+
+function generateReason(fontFamily, fontData, matchedMoods) {
+    const typeNames = {
+        'myungjo': '명조(세리프) 계열',
+        'serif': '세리프 계열',
+        'gothic': '고딕(산세리프) 계열',
+        'handwriting': '손글씨 계열',
+        'display': '디스플레이 계열',
+        'mono': '모노스페이스 계열',
+    };
+    const typeName = typeNames[fontData.type] || '';
+
+    if (matchedMoods.length >= 2) {
+        return `${typeName} 서체로, ${matchedMoods.slice(0, 2).join('·')} 분위기에 잘 어울립니다.`;
+    } else if (matchedMoods.length === 1) {
+        return `${typeName} 서체로, ${matchedMoods[0]} 느낌을 표현하기 적합합니다.`;
+    }
+    return `${typeName} 서체입니다.`;
+}
+
+// ===== DISPLAY =====
+function displayResults() {
+    const resultsSection = document.getElementById('resultsSection');
+    const fontCards = document.getElementById('fontCards');
+    const customTextSection = document.getElementById('customTextSection');
+
+    fontCards.innerHTML = '';
+    document.getElementById('resultsCount').textContent = `${recommendedFonts.length}개 폰트`;
+
+    recommendedFonts.forEach((font) => {
+        const card = document.createElement('div');
+        card.className = 'font-card';
+
+        const tagsHTML = (font.mood_tags || []).map(t =>
+            `<span class="font-tag match">${t}</span>`
+        ).join('') + `<span class="font-tag">${font.usage || ''}</span>`;
+
+        const previewText = document.getElementById('customTextInput').value || '가나다라 Typography 123';
+
+        card.innerHTML = `
+            <div class="font-card-header">
+                <div class="font-name">${font.fontFamily}</div>
+                <div class="font-tags">${tagsHTML}</div>
+            </div>
+            <div class="font-preview">
+                <div class="font-preview-text" style="font-family: '${font.fontFamily}'">${previewText}</div>
+            </div>
+            <div class="font-reason">${font.reason || ''}</div>
+            <div class="font-actions">
+                <span style="color:#555;font-size:12px;">매칭 ${font.score}%</span>
+                <button class="copy-btn" data-font="${font.fontFamily}">복사</button>
+            </div>
+        `;
+
+        fontCards.appendChild(card);
+    });
+
+    fontCards.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            navigator.clipboard.writeText(btn.dataset.font);
+            btn.textContent = '복사됨!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = '폰트명 복사'; btn.classList.remove('copied'); }, 1500);
+        });
+    });
+
+    resultsSection.classList.add('visible');
+    customTextSection.classList.add('visible');
+
+    // Refresh button
+    document.getElementById('refreshBtn').onclick = () => startRecommendation();
+}
+
+// ===== CUSTOM TEXT UPDATE =====
+document.getElementById('customTextInput').addEventListener('input', (e) => {
+    const text = e.target.value || '가나다라 Typography 123';
+    document.querySelectorAll('.font-preview-text').forEach(el => {
+        el.textContent = text;
+    });
+});
+
+// ===== PREVIEW TAB =====
+let previewImage = null;
+
+const previewUpload = document.getElementById('previewUpload');
+const previewImageInput = document.getElementById('previewImageInput');
+
+previewUpload.addEventListener('click', () => previewImageInput.click());
+previewUpload.addEventListener('dragover', (e) => { e.preventDefault(); previewUpload.style.borderColor = '#555'; });
+previewUpload.addEventListener('dragleave', () => { previewUpload.style.borderColor = '#333'; });
+previewUpload.addEventListener('drop', (e) => {
+    e.preventDefault();
+    previewUpload.style.borderColor = '#333';
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) handlePreviewImage(file);
+});
+previewImageInput.addEventListener('change', (e) => { if (e.target.files[0]) handlePreviewImage(e.target.files[0]); });
+
+function handlePreviewImage(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            previewImage = img;
+            previewUpload.style.display = 'none';
+            document.getElementById('previewControls').classList.add('visible');
+            document.getElementById('previewOptions').classList.add('visible');
+            document.getElementById('previewCanvasWrap').classList.add('visible');
+            renderPreview();
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function loadRecommendedFontSelect() {
+    const select = document.getElementById('fontSelect');
+    select.innerHTML = '<option value="">추천 폰트를 선택하세요</option>';
+
+    if (recommendedFonts.length === 0) {
+        select.innerHTML = '<option value="">먼저 폰트 추천을 받아주세요</option>';
+        return;
+    }
+
+    for (const font of recommendedFonts) {
+        const option = document.createElement('option');
+        option.value = font.fontFamily;
+        option.textContent = font.fontFamily;
+        select.appendChild(option);
+    }
+}
+
+function renderPreview() {
+    if (!previewImage) return;
+
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = previewImage.width;
+    canvas.height = previewImage.height;
+
+    // Draw background image
+    ctx.drawImage(previewImage, 0, 0);
+
+    // Draw text
+    const text = document.getElementById('overlayText').value;
+    const fontFamily = document.getElementById('fontSelect').value;
+    const fontSize = document.getElementById('fontSize').value;
+    const fontColor = document.getElementById('fontColor').value;
+
+    if (text && fontFamily) {
+        const scaledSize = fontSize * (previewImage.width / 900);
+        ctx.font = `${scaledSize}px "${fontFamily}"`;
+        ctx.fillStyle = fontColor;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Text shadow for readability
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = scaledSize * 0.1;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = scaledSize * 0.05;
+
+        // Word wrap
+        const maxWidth = previewImage.width * 0.8;
+        const lines = wrapText(ctx, text, maxWidth);
+        const lineHeight = scaledSize * 1.3;
+
+        let startY;
+        if (textPlacement === 'title') {
+            // Top center area
+            startY = previewImage.height * 0.18;
+        } else {
+            // Dead center
+            startY = previewImage.height / 2 - (lines.length - 1) * lineHeight / 2;
+        }
+
+        lines.forEach((line, i) => {
+            ctx.fillText(line, previewImage.width / 2, startY + i * lineHeight);
+        });
+
+        ctx.shadowColor = 'transparent';
+    }
+}
+
+function wrapText(ctx, text, maxWidth) {
+    const words = text.split('');
+    const lines = [];
+    let currentLine = '';
+
+    for (const char of words) {
+        const testLine = currentLine + char;
+        if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+            lines.push(currentLine);
+            currentLine = char;
+        } else {
+            currentLine = testLine;
+        }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
+}
+
+// Placement toggle
+let textPlacement = 'title';
+document.querySelectorAll('.placement-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.placement-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        textPlacement = btn.dataset.placement;
+        renderPreview();
+    });
+});
+
+// Preview controls event listeners
+document.getElementById('overlayText').addEventListener('input', renderPreview);
+document.getElementById('fontSelect').addEventListener('change', renderPreview);
+document.getElementById('fontSize').addEventListener('input', renderPreview);
+document.getElementById('fontColor').addEventListener('input', renderPreview);
+</script>
+
+</body>
+</html>

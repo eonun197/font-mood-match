@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Viewer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 48px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+        .header p { color: #666; margin-top: 8px; font-size: 14px; }
+
+        .search-box {
+            max-width: 500px;
+            margin: 0 auto 40px;
+        }
+        .search-input {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 14px 20px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: #555; }
+        .search-input::placeholder { color: #555; }
+
+        .preview-section {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .preview-card {
+            background: #141414;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        .preview-label {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .preview-text {
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+        .size-large { font-size: 48px; }
+        .size-medium { font-size: 28px; }
+        .size-small { font-size: 18px; color: #ccc; }
+        .size-body { font-size: 15px; color: #aaa; line-height: 1.8; }
+
+        .font-name-display {
+            text-align: center;
+            color: #444;
+            font-size: 13px;
+            margin-bottom: 32px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Font Viewer</h1>
+    <p>폰트 이름을 입력하면 미리보기를 보여줍니다</p>
+</div>
+
+<div class="search-box">
+    <input type="text" class="search-input" id="fontInput" placeholder="폰트 이름 입력 (예: Pretendard, 나눔고딕)" autofocus>
+</div>
+
+<div class="font-name-display" id="fontNameDisplay">폰트를 입력해주세요</div>
+
+<div class="preview-section" id="previewSection">
+    <div class="preview-card">
+        <div class="preview-label">Large — 48px</div>
+        <div class="preview-text size-large" id="previewLarge">가나다라마바사 ABCDEFG</div>
+    </div>
+    <div class="preview-card">
+        <div class="preview-label">Medium — 28px</div>
+        <div class="preview-text size-medium" id="previewMedium">디자인의 본질을 탐구하다</div>
+    </div>
+    <div class="preview-card">
+        <div class="preview-label">Small — 18px</div>
+        <div class="preview-text size-small" id="previewSmall">The quick brown fox jumps over the lazy dog. 0123456789</div>
+    </div>
+    <div class="preview-card">
+        <div class="preview-label">Body — 15px</div>
+        <div class="preview-text size-body" id="previewBody">좋은 디자인은 단순히 보기 좋은 것을 넘어, 사용자의 경험을 근본적으로 변화시킵니다. 형태와 기능의 조화 속에서 진정한 아름다움이 탄생합니다. 타이포그래피는 디자인의 뼈대이자 목소리입니다.</div>
+    </div>
+</div>
+
+<script>
+const fontInput = document.getElementById('fontInput');
+const fontNameDisplay = document.getElementById('fontNameDisplay');
+const previews = ['previewLarge', 'previewMedium', 'previewSmall', 'previewBody'];
+
+fontInput.addEventListener('input', () => {
+    const fontName = fontInput.value.trim();
+    if (fontName) {
+        fontNameDisplay.textContent = fontName;
+        previews.forEach(id => {
+            document.getElementById(id).style.fontFamily = `"${fontName}"`;
+        });
+    } else {
+        fontNameDisplay.textContent = '폰트를 입력해주세요';
+        previews.forEach(id => {
+            document.getElementById(id).style.fontFamily = '';
+        });
+    }
+});
+</script>
+
+</body>
+</html>
