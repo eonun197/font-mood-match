@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Russian Roulette</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ============== SCREEN 1: SETUP (인원수 / 당첨자수) ============== -->
+<section class="screen" id="screen-setup" data-active="true">
+  <div class="setup-card">
+    <h1 class="title">Russian Roulette</h1>
+
+    <div class="field">
+      <label for="totalCount">총 인원</label>
+      <input type="number" id="totalCount" min="1" max="50" value="3" />
+    </div>
+
+    <div class="field">
+      <label for="winnerCount">당첨 인원</label>
+      <input type="number" id="winnerCount" min="1" max="50" value="1" />
+    </div>
+
+    <p class="error" id="setupError" hidden></p>
+
+    <button class="primary" id="goNamesBtn">다음</button>
+  </div>
+</section>
+
+<!-- ============== SCREEN 2: NAMES (이름 입력) ============== -->
+<section class="screen" id="screen-names">
+  <div class="setup-card">
+    <h2 class="title">이름 입력</h2>
+
+    <div class="names-grid" id="namesGrid"></div>
+
+    <p class="error" id="namesError" hidden></p>
+
+    <div class="row">
+      <button class="ghost" id="backToSetupBtn">이전</button>
+      <button class="primary" id="goLoadBtn" disabled>완료</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SCREEN 3: LOAD (블러 + 장전 버튼) ============== -->
+<section class="screen" id="screen-load">
+  <div class="load-bg" aria-hidden="true"></div>
+  <button class="load-btn" id="loadBtn">
+    <span class="load-btn-label">장전</span>
+  </button>
+</section>
+
+<!-- ============== SCREEN 4: ACTION (권총 / 풍선 / 총알 / 발사) ============== -->
+<section class="screen" id="screen-action">
+
+  <div class="stage" id="stage">
+    <!-- 권총 (왼쪽 고정) -->
+    <div class="gun-anchor">
+      <svg class="gun" viewBox="0 0 240 140" aria-hidden="true">
+        <!-- 그립 -->
+        <path d="M70 70 L70 130 L120 130 L130 80 Z" fill="#222" stroke="#000" stroke-width="2"/>
+        <!-- 본체 -->
+        <rect x="60" y="55" width="120" height="35" rx="4" fill="#333" stroke="#000" stroke-width="2"/>
+        <!-- 실린더 -->
+        <circle cx="100" cy="72" r="22" fill="#444" stroke="#000" stroke-width="2"/>
+        <circle cx="100" cy="72" r="4" fill="#111"/>
+        <!-- 총열 -->
+        <rect x="170" y="62" width="60" height="20" rx="2" fill="#2a2a2a" stroke="#000" stroke-width="2"/>
+        <!-- 총열 끝 (총구) -->
+        <circle cx="232" cy="72" r="6" fill="#000"/>
+      </svg>
+      <!-- 발사 시 머즐 플래시 -->
+      <div class="muzzle-flash" id="muzzleFlash"></div>
+    </div>
+
+    <!-- 풍선들 (가로 일렬) -->
+    <div class="balloons" id="balloons"></div>
+  </div>
+
+  <!-- 우하단 HUD: 총알 + 발사 버튼 -->
+  <div class="hud">
+    <div class="bullets" id="bullets"></div>
+    <button class="fire-btn" id="fireBtn">발사</button>
+  </div>
+</section>
+
+<!-- ============== SCREEN 5: RESULT (당첨자 명단) ============== -->
+<section class="screen" id="screen-result">
+  <div class="setup-card">
+    <h2 class="title">당첨</h2>
+    <p class="subtitle">당첨된 사람은 다음과 같다.</p>
+    <ul class="winner-list" id="winnerList"></ul>
+    <button class="primary" id="restartBtn">다시 하기</button>
+  </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
