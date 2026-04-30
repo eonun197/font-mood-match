@@ -979,12 +979,12 @@ async function startStandoff() {
   panelTL.classList.add('click');
   shakeCamera(true);
 
-  // 살짝 늦게 우하단 — 케찹통 핑그르르 스핀 (ease-out 깔끔히 정지)
+  // 살짝 늦게 우하단 — 케찹통 핑그르르 스핀 (3D 원근 + 빨간 잔상)
   await sleep(80);
   panelBR.classList.add('spin');
 
-  // 3) 스핀 완전 정지까지 대기 (.85s + cushion)
-  await sleep(880);
+  // 3) 스핀 완전 정지까지 대기 (1.05s + cushion)
+  await sleep(1080);
 
   // 4) 마무리 플래시 → 본 게임 진입
   flashEl.classList.add('flash');
