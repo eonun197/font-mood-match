@@ -363,7 +363,7 @@ function toasterFrontSVG(slotCount, opts = {}) {
   `;
 }
 
-// 빈티지 케찹통 (스파게티웨스턴 캔)
+// 케찹통 — 클래식 squeeze 보틀 (총구 느낌 빼고 일반 병 모양)
 function ketchupGunSVG() {
   return `
     <svg viewBox="0 0 110 140" width="100%" height="100%">
@@ -373,50 +373,48 @@ function ketchupGunSVG() {
           <stop offset="50%"  stop-color="#c8362f"/>
           <stop offset="100%" stop-color="#7a1a14"/>
         </linearGradient>
-        <linearGradient id="canShine" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"  stop-color="rgba(255,220,180,0.35)"/>
-          <stop offset="100%" stop-color="rgba(255,220,180,0)"/>
-        </linearGradient>
         <linearGradient id="canCap" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"  stop-color="#6a5238"/>
-          <stop offset="100%" stop-color="#2a1f15"/>
+          <stop offset="0%"  stop-color="#fdf8e7"/>
+          <stop offset="100%" stop-color="#b8b09a"/>
         </linearGradient>
       </defs>
 
-      <!-- 본체 (살짝 통통한 캔/병) -->
-      <path d="M 22 32 L 18 60 L 14 110 Q 16 128, 32 128 L 78 128 Q 94 128, 96 110 L 92 60 L 88 32 Z"
+      <!-- squeeze 주둥이 (뾰족한 콘 모양 nozzle) -->
+      <path d="M 55 0 L 64 30 L 46 30 Z"
+            fill="url(#canCap)" stroke="#3a0a08" stroke-width="2" stroke-linejoin="round"/>
+      <!-- 주둥이 끝 검은 구멍 (열린 부분) -->
+      <ellipse cx="55" cy="2" rx="2.5" ry="1.4" fill="#1a0d04"/>
+      <!-- 콘 그루브 (구분선) -->
+      <path d="M 51 12 Q 55 13, 59 12" stroke="#5a4a30" stroke-width="0.5" fill="none" opacity="0.7"/>
+      <path d="M 49 20 Q 55 21, 61 20" stroke="#5a4a30" stroke-width="0.5" fill="none" opacity="0.7"/>
+
+      <!-- 어깨 (콘 직접 연결, 둥글게 펼침) -->
+      <path d="M 46 30 Q 30 34, 22 48 L 88 48 Q 80 34, 64 30 Z"
+            fill="url(#canBody)" stroke="#3a0a08" stroke-width="2" stroke-linejoin="round"/>
+
+      <!-- 본체 (둥근 squeeze 보틀) -->
+      <path d="M 22 48 Q 16 70, 16 100 L 18 128 Q 20 138, 32 138 L 78 138 Q 90 138, 92 128 L 94 100 Q 94 70, 88 48 Z"
             fill="url(#canBody)" stroke="#3a0a08" stroke-width="2.5" stroke-linejoin="round"/>
 
       <!-- 본체 하이라이트 -->
-      <path d="M 22 60 Q 18 90, 22 120" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 24 58 Q 20 90, 24 120" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="3" stroke-linecap="round"/>
 
       <!-- 라벨 -->
-      <rect x="22" y="58" width="66" height="42" rx="2"
-            fill="#f0deaa" stroke="#3a0a08" stroke-width="1.5"/>
-      <!-- 라벨 안 별 + 텍스트 -->
-      <text x="55" y="76" text-anchor="middle"
-            font-family="'Rye', serif" font-size="14"
-            fill="#7a1a14" letter-spacing="2">KETCHUP</text>
+      <rect x="22" y="58" width="66" height="48" rx="2"
+            fill="#fff5e0" stroke="#3a0a08" stroke-width="1.5"/>
+      <text x="55" y="78" text-anchor="middle"
+            font-family="'Bevan', serif" font-size="14"
+            fill="#c8362f" letter-spacing="2">KETCHUP</text>
       <text x="55" y="92" text-anchor="middle"
-            font-family="'Bevan', serif" font-size="8"
-            fill="#3a0a08" letter-spacing="2">★ HIGH NOON ★</text>
-
-      <!-- 어깨 (본체 위 -> 캡) -->
-      <path d="M 22 32 Q 36 20, 55 20 Q 74 20, 88 32"
-            fill="#7a1a14" stroke="#3a0a08" stroke-width="2.5" stroke-linejoin="round"/>
-
-      <!-- 캡 -->
-      <rect x="34" y="10" width="42" height="14" rx="2"
-            fill="url(#canCap)" stroke="#1a0d04" stroke-width="1.5"/>
-
-      <!-- 노즐 -->
-      <polygon points="44,0 66,0 62,12 48,12"
-               fill="#1a0d04"/>
-      <circle cx="55" cy="0" r="2.5" fill="#000"/>
+            font-family="'Bevan', serif" font-size="7"
+            fill="#3a0a08" letter-spacing="1.5">★ EST. 1873 ★</text>
+      <text x="55" y="102" text-anchor="middle"
+            font-family="'Bevan', serif" font-size="6"
+            fill="#3a0a08" letter-spacing="1">PURE TOMATO</text>
 
       <!-- 작은 녹/긁힘 -->
-      <circle cx="78" cy="48" r="1.5" fill="#a85d28" opacity="0.6"/>
-      <circle cx="30" cy="116" r="1.2" fill="#a85d28" opacity="0.5"/>
+      <circle cx="78" cy="55" r="1.2" fill="#a85d28" opacity="0.5"/>
+      <circle cx="32" cy="120" r="1" fill="#a85d28" opacity="0.4"/>
     </svg>
   `;
 }
