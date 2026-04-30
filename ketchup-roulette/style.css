@@ -1046,22 +1046,27 @@ body::after {
 .ketchup-fixed {
   position: fixed;
   left: 50%;
-  bottom: -300px;       /* 본체 일부 화면 밖, 어깨+라벨 상단 보임 */
+  bottom: -300px;
   transform: translateX(-50%);
   width: 290px;
-  height: 480px;        /* 더 키워서 어깨/라벨 영역 확보 */
+  height: 480px;
   z-index: 10;
   filter: drop-shadow(0 -12px 24px rgba(40, 25, 10, 0.55));
-  transition: transform .12s ease;
+  /* 대기 상태: 미세하게 위아래로 들썩임 */
+  animation: bottleIdle 2.6s ease-in-out infinite;
 }
-/* 격발: 압착(scaleX↓) → 반동(translateY↓) → 복귀 */
+@keyframes bottleIdle {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(-3px); }
+}
+/* 격발: 강한 압착 → 반동 → 복귀 (idle 덮어씀) */
 .ketchup-fixed.shoot {
-  animation: gunShoot .42s cubic-bezier(.4, 1.4, .5, 1);
+  animation: gunShoot .45s cubic-bezier(.4, 1.4, .5, 1);
 }
 @keyframes gunShoot {
   0%   { transform: translateX(-50%) scaleX(1)    scaleY(1)    translateY(0); }
-  30%  { transform: translateX(-50%) scaleX(0.84) scaleY(1.10) translateY(-3px); }   /* 손으로 꾹 짠 압착 */
-  65%  { transform: translateX(-50%) scaleX(1.06) scaleY(0.96) translateY(12px); }    /* 반동 살짝 아래 + 풀림 */
+  20%  { transform: translateX(-50%) scaleX(0.78) scaleY(1.14) translateY(-4px); }   /* 강한 압착 */
+  55%  { transform: translateX(-50%) scaleX(1.08) scaleY(0.94) translateY(14px); }   /* 발사 후 반동 */
   100% { transform: translateX(-50%) scaleX(1)    scaleY(1)    translateY(0); }
 }
 
