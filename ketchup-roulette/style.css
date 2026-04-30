@@ -1062,17 +1062,17 @@ body::after {
   100% { transform: scale(1)    translateY(0); }
 }
 
-/* 뚜껑 개봉 — 레버 철컥과 0.1초 오차도 없이 일치 (55% 시점=0.231s) */
-/* 끝에서 페이드/축소 제거 — 화면 전환에서 자연스럽게 사라지게 둠 */
+/* 뚜껑 개봉 — 토스터 레버와 동일한 overshoot→bounce→lock 패턴, 같은 박자 (55%=0.231s) */
 .panel-br.pop .bottle-cap {
   animation: capPop .42s cubic-bezier(.42, 0, .85, 1) forwards;
 }
 @keyframes capPop {
   0%   { transform: translateY(0)    rotate(0deg)   scale(1);    opacity: 1; }
-  35%  { transform: translateY(-3px) rotate(-3deg)  scale(1.04); opacity: 1; }    /* pre-launch 긴장 */
-  55%  { transform: translateY(-26px) rotate(-22deg) scale(0.97); opacity: 1; }    /* SYNC: 발사 */
-  78%  { transform: translateY(-44px) rotate(-40deg) scale(0.93); opacity: 1; }
-  100% { transform: translateY(-54px) rotate(-50deg) scale(0.92); opacity: 1; }    /* 떠 있는 상태로 hold */
+  20%  { transform: translateY(-2px) rotate(-2deg)  scale(1.04); opacity: 1; }   /* pre-launch 긴장 */
+  55%  { transform: translateY(-32px) rotate(-28deg) scale(0.96); opacity: 1; }   /* SYNC: 발사 — overshoot */
+  72%  { transform: translateY(-22px) rotate(-18deg) scale(0.98); opacity: 1; }   /* bounce back */
+  88%  { transform: translateY(-28px) rotate(-22deg) scale(0.97); opacity: 1; }   /* settle */
+  100% { transform: translateY(-26px) rotate(-20deg) scale(0.97); opacity: 1; }   /* LOCK & HOLD */
 }
 
 /* 팡! — 뚜껑 개봉 순간 충격파 (레버 철컥과 동시) */
