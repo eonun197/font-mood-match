@@ -366,7 +366,8 @@ function toasterFrontSVG(slotCount, opts = {}) {
 // 케찹통 — Heinz 스타일, 캡-본체 곡선 연결, 좌측 광택 + 우측 그림자, 발사구 강조
 function ketchupGunSVG(opts = {}) {
   const withCap = !!opts.withCap;
-  const viewBox = withCap ? '0 -40 110 260' : '0 12 110 208';
+  // withCap (컷신): 상단(캡+스파우트+어깨)만 보이도록 crop, 위로 캡 pop 공간 확보
+  const viewBox = withCap ? '0 -50 110 130' : '0 12 110 208';
 
   // 본체 path — 항상 spout 포함 (캡 있을 땐 캡이 spout 가림, 뚜껑 뿅 빠지면 노출)
   const bottlePath = `
