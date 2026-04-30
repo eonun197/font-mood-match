@@ -1011,8 +1011,8 @@ async function startStandoff() {
   panelBR.classList.add('pop');
   shakeCamera(true);
 
-  // 3) 양쪽 모션(lever .42s + cap .30+.60=.90s) 종료 + 정적 hold
-  await sleep(1500);
+  // 3) 양쪽 모션(.42s 동기화) 종료 후 발사구 노출 상태 잠깐 hold
+  await sleep(1100);
 
   // 4) 마무리 플래시 → 본 게임 진입
   flashEl.classList.add('flash');

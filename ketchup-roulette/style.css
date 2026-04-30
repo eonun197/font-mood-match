@@ -952,12 +952,14 @@ body::after {
   transform-origin: center;
 }
 .panel-tl.click .lever-closeup .lever-knob {
-  animation: leverDown .42s cubic-bezier(.5, 0, .85, 1) forwards;
+  animation: leverDown .42s cubic-bezier(.42, 0, .85, 1) forwards;
 }
 @keyframes leverDown {
   0%   { transform: translateY(0); }
-  88%  { transform: translateY(150px); }
-  100% { transform: translateY(146px); }
+  55%  { transform: translateY(162px); }   /* 철컥! — overshoot down */
+  72%  { transform: translateY(138px); }   /* bounce up (반동) */
+  88%  { transform: translateY(152px); }   /* settle down */
+  100% { transform: translateY(146px); }   /* lock */
 }
 
 /* 집중선 (action lines, 좌상단 패널 안에서 폭발) */
@@ -1046,48 +1048,88 @@ body::after {
   height: auto;
   overflow: visible;
 }
-/* 본체 등장 (페이드 + 살짝 스케일 업) */
+/* 본체 등장 + cap pop 시점에 반동 출렁임 (recoil) — 레버와 같은 박자 */
 .panel-br.pop .bottle-spin {
-  animation: bottleAppear .42s cubic-bezier(.3, 1.4, .5, 1) forwards;
+  animation: bottleAppear .42s cubic-bezier(.2, 1.2, .4, 1) forwards;
 }
 @keyframes bottleAppear {
-  0%   { opacity: 0; transform: scale(0.8) translateY(20px); }
-  100% { opacity: 1; transform: scale(1)   translateY(0); }
+  0%   { opacity: 0; transform: scale(0.85) translateY(15px); }
+  35%  { opacity: 1; transform: scale(1)    translateY(0); }
+  /* 55% (=0.231s) — 레버 철컥! 캡 발사! 본체 살짝 들썩 */
+  55%  { transform: scale(1.05) translateY(-3px); }
+  72%  { transform: scale(0.97) translateY(2px); }   /* 반동 */
+  88%  { transform: scale(1.02) translateY(-1px); }
+  100% { transform: scale(1)    translateY(0); }
 }
 
-/* 뚜껑 뿅! — 토스터 찰칵과 같은 박자 (지연 0.3s 후 발사 모먼트와 일치) */
+/* 뚜껑 개봉 — 레버 철컥과 0.1초 오차도 없이 일치 (55% 시점=0.231s) */
 .panel-br.pop .bottle-cap {
-  animation: capPop .60s cubic-bezier(.18, 1.5, .35, 1) .30s forwards;
+  animation: capPop .42s cubic-bezier(.42, 0, .85, 1) forwards;
 }
 @keyframes capPop {
   0%   { transform: translateY(0)    rotate(0deg)   scale(1);    opacity: 1; }
-  18%  { transform: translateY(-3px) rotate(-5deg)  scale(1.08); opacity: 1; }   /* 짧은 압축/긴장 */
-  55%  { transform: translateY(-32px) rotate(-28deg) scale(0.96); opacity: 0.95; }
-  100% { transform: translateY(-70px) rotate(-55deg) scale(0.62); opacity: 0; }
+  35%  { transform: translateY(-3px) rotate(-3deg)  scale(1.05); opacity: 1; }    /* pre-launch 긴장 */
+  55%  { transform: translateY(-32px) rotate(-28deg) scale(0.94); opacity: 0.85; } /* SYNC: 발사 */
+  78%  { transform: translateY(-65px) rotate(-50deg) scale(0.7);  opacity: 0.3; }
+  100% { transform: translateY(-92px) rotate(-65deg) scale(0.5);  opacity: 0; }
 }
 
-/* 우하단 — 뚜껑 뿅 순간 burst (작은 충격선) */
+/* 팡! — 뚜껑 개봉 순간 충격파 (레버 철컥과 동시) */
 .speed-arcs {
   position: absolute;
-  right: 22%;
-  bottom: 60%;
-  width: 14%;
+  right: 24%;
+  bottom: 64%;
+  width: 16%;
   aspect-ratio: 1 / 1;
-  max-width: 120px;
+  max-width: 140px;
   border-radius: 50%;
-  background: radial-gradient(circle, transparent 28%, rgba(255,255,255,0.85) 30%, transparent 35%, rgba(255,245,220,0.7) 38%, transparent 44%);
+  background:
+    radial-gradient(circle,
+      transparent 22%,
+      rgba(255, 255, 255, 0.95) 24%,
+      rgba(255, 245, 220, 0.7) 30%,
+      transparent 36%,
+      rgba(255, 245, 220, 0.5) 42%,
+      transparent 48%
+    );
   opacity: 0;
-  transform: scale(0.4);
+  transform: scale(0.3);
   z-index: 7;
   pointer-events: none;
+  filter: blur(0.5px);
 }
 .panel-br.pop .speed-arcs {
-  animation: capPopBurst .45s ease-out .30s forwards;
+  animation: capPopBurst .35s ease-out .20s forwards;   /* 0.20s 후 시작 → 0.23-0.31s 정점 */
 }
 @keyframes capPopBurst {
-  0%   { opacity: 0; transform: scale(0.4); }
-  35%  { opacity: 1; transform: scale(1.2); }
-  100% { opacity: 0; transform: scale(1.8); }
+  0%   { opacity: 0; transform: scale(0.3); }
+  20%  { opacity: 1; transform: scale(1);   }
+  60%  { opacity: 0.9; transform: scale(1.4); }
+  100% { opacity: 0; transform: scale(2.0); }
+}
+
+/* 발사구(스파우트) 빨간 빛 — 뚜껑 열리는 순간 살짝 빛남 */
+.bottle-spin::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 18%;
+  aspect-ratio: 2 / 1;
+  background: radial-gradient(ellipse, rgba(255, 80, 50, 0.55), transparent 70%);
+  transform: translate(-50%, 0) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 8;
+  filter: blur(2px);
+}
+.panel-br.pop .bottle-spin::after {
+  animation: spoutFlash .42s ease-out .20s forwards;
+}
+@keyframes spoutFlash {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.4); }
+  30%  { opacity: 1; transform: translate(-50%, 0) scale(1.2); }
+  100% { opacity: 0; transform: translate(-50%, 0) scale(1.5); }
 }
 
 /* ====== 마무리 플래시 ====== */
