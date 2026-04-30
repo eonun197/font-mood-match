@@ -992,21 +992,21 @@ body::after {
 
 .bread-popup .bread-no {
   font-family: "Black Ops One", sans-serif;
-  font-size: 42px;
+  font-size: 56px;
   letter-spacing: 0.06em;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   color: var(--ink);
-  text-shadow: 0 0 14px rgba(110,56,18,0.5);
+  text-shadow: 0 0 16px rgba(110,56,18,0.5);
   position: relative;
-  z-index: 1;            /* 케찹(z 5) 아래 — multiply로 어둡게 비침 */
+  z-index: 1;
 }
 .bread-popup .bread-name {
   font-family: "Hahmlet", serif;
   font-weight: 800;
-  font-size: 40px;
+  font-size: 52px;
   color: var(--ink);
   text-align: center;
-  max-width: 240px;
+  max-width: 260px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1042,25 +1042,27 @@ body::after {
   transform: translateY(120px);
 }
 
-/* 케찹총 — FPS 스타일 (총구만 보임, 더 큼) */
+/* 케찹통 — 어깨/라벨 노출 (본체 상단 약 20% 화면 차지) */
 .ketchup-fixed {
   position: fixed;
   left: 50%;
-  bottom: -240px;       /* 본체 대부분 화면 밖 */
+  bottom: -300px;       /* 본체 일부 화면 밖, 어깨+라벨 상단 보임 */
   transform: translateX(-50%);
   width: 290px;
-  height: 360px;
+  height: 480px;        /* 더 키워서 어깨/라벨 영역 확보 */
   z-index: 10;
-  filter: drop-shadow(0 -10px 20px rgba(40,25,10,0.6));
+  filter: drop-shadow(0 -12px 24px rgba(40, 25, 10, 0.55));
   transition: transform .12s ease;
 }
+/* 격발: 압착(scaleX↓) → 반동(translateY↓) → 복귀 */
 .ketchup-fixed.shoot {
-  animation: gunShoot .35s cubic-bezier(.5, 1.6, .5, 1);
+  animation: gunShoot .42s cubic-bezier(.4, 1.4, .5, 1);
 }
 @keyframes gunShoot {
-  0%   { transform: translateX(-50%) translateY(0) scale(1); }
-  25%  { transform: translateX(-50%) translateY(10px) scale(0.95, 1.08); }
-  100% { transform: translateX(-50%) translateY(0) scale(1); }
+  0%   { transform: translateX(-50%) scaleX(1)    scaleY(1)    translateY(0); }
+  30%  { transform: translateX(-50%) scaleX(0.84) scaleY(1.10) translateY(-3px); }   /* 손으로 꾹 짠 압착 */
+  65%  { transform: translateX(-50%) scaleX(1.06) scaleY(0.96) translateY(12px); }    /* 반동 살짝 아래 + 풀림 */
+  100% { transform: translateX(-50%) scaleX(1)    scaleY(1)    translateY(0); }
 }
 
 /* 모바일 — 비례 줄여도 토스터·식빵 스케일 유지 */
