@@ -364,9 +364,11 @@ function toasterFrontSVG(slotCount, opts = {}) {
 }
 
 // 케찹통 — Heinz 스타일, 캡-본체 곡선 연결, 좌측 광택 + 우측 그림자, 발사구 강조
-function ketchupGunSVG() {
+function ketchupGunSVG(opts = {}) {
+  const withCap = !!opts.withCap;
+  const viewBox = withCap ? '0 0 110 220' : '0 22 110 198';
   return `
-    <svg viewBox="0 22 110 198" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
+    <svg viewBox="${viewBox}" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
       <defs>
         <linearGradient id="bottleBody" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%"   stop-color="#8e1414"/>
@@ -441,11 +443,13 @@ function ketchupGunSVG() {
       <path d="M 90 56 C 94 90, 96 134, 94 172 C 92 196, 86 208, 80 212"
             fill="none" stroke="rgba(0,0,0,0.26)" stroke-width="3.2" stroke-linecap="round"/>
 
+      ${withCap ? '' : `
       <!-- 발사구 (뚜껑 까진 상태 — 검은 입구 노출) -->
       <ellipse cx="55" cy="28.2" rx="11.5" ry="3" fill="#0a0202"/>
       <ellipse cx="55" cy="27.6" rx="8" ry="1.6" fill="#000"/>
       <!-- 입구 안쪽 살짝 빛 -->
       <ellipse cx="55" cy="29.4" rx="9" ry="0.8" fill="rgba(255,255,255,0.18)"/>
+      `}
 
       <!-- =============== 라벨 (방패형 + 흰 테두리) =============== -->
       <!-- 흰 테두리 outer -->
@@ -494,6 +498,38 @@ function ketchupGunSVG() {
       <text x="55" y="160" text-anchor="middle"
             font-family="'Bevan', serif" font-size="3.2"
             fill="#3a0a08" letter-spacing="0.8">IT'S DELICIOUS</text>
+
+      ${withCap ? `
+      <!-- =============== 캡 닫힘 (스핀 전용 정적) =============== -->
+      <path d="
+        M 55 0
+        C 52.5 0.4, 51 2.5, 50 5
+        C 48 11, 45 18, 43 23
+        C 41.5 26, 41 27.4, 41 28
+        L 69 28
+        C 69 27.4, 68.5 26, 67 23
+        C 65 18, 62 11, 60 5
+        C 59 2.5, 57.5 0.4, 55 0
+        Z"
+        fill="url(#capGrad)" stroke="#3a0a08" stroke-width="0.8" stroke-linejoin="round"/>
+      <path d="
+        M 55 0
+        C 52.5 0.4, 51 2.5, 50 5
+        C 48 11, 45 18, 43 23
+        C 41.5 26, 41 27.4, 41 28
+        L 69 28
+        C 69 27.4, 68.5 26, 67 23
+        C 65 18, 62 11, 60 5
+        C 59 2.5, 57.5 0.4, 55 0
+        Z"
+        fill="url(#capShine)"/>
+      <path d="M 50 4 C 47 10, 44.5 17, 43 24"
+            fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+      <ellipse cx="53" cy="3" rx="0.9" ry="1.6" fill="rgba(255,255,255,0.95)"/>
+      <path d="M 60 6 C 63 13, 65.5 20, 67 26"
+            fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M 41 28 Q 55 30.4, 69 28" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="0.9" stroke-linecap="round"/>
+      ` : ''}
 
     </svg>
   `;
@@ -947,9 +983,9 @@ async function startStandoff() {
   diag.classList.remove('enter');
   flashEl.classList.remove('flash');
 
-  // SVG 주입 (매 회 신규)
+  // SVG 주입 (매 회 신규) — 스핀 시에는 뚜껑 닫힘
   leverEl.innerHTML  = leverCloseupSVG();
-  bottleEl.innerHTML = ketchupGunSVG();
+  bottleEl.innerHTML = ketchupGunSVG({ withCap: true });
 
   showScreen('ready');
 
@@ -970,8 +1006,8 @@ async function startStandoff() {
   await sleep(80);
   panelBR.classList.add('spin');
 
-  // 3) 스핀 완전 정지까지 대기 (1.0s + cushion)
-  await sleep(1020);
+  // 3) 스핀 완전 정지까지 대기 (1.2s + cushion, settlement 반동 포함)
+  await sleep(1240);
 
   // 4) 마무리 플래시 → 본 게임 진입
   flashEl.classList.add('flash');
