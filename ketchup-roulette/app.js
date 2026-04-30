@@ -366,7 +366,38 @@ function toasterFrontSVG(slotCount, opts = {}) {
 // 케찹통 — Heinz 스타일, 캡-본체 곡선 연결, 좌측 광택 + 우측 그림자, 발사구 강조
 function ketchupGunSVG(opts = {}) {
   const withCap = !!opts.withCap;
-  const viewBox = withCap ? '0 0 110 220' : '0 22 110 198';
+  const viewBox = withCap ? '0 0 110 220' : '0 12 110 208';
+
+  // 본체 path: withCap 이면 호리병 본체만, 까진 상태면 짧은 스파우트(주둥이)+본체 결합
+  const bottlePath = withCap
+    ? `
+        M 41 28
+        C 32 36, 22 52, 16 76
+        C 10 102, 8 138, 10 168
+        C 12 192, 24 210, 40 214
+        C 50 216, 60 216, 70 214
+        C 86 210, 98 192, 100 168
+        C 102 138, 100 102, 94 76
+        C 88 52, 78 36, 69 28
+        Z`
+    : `
+        M 45 18
+        Q 45 16, 47 16
+        L 63 16
+        Q 65 16, 65 18
+        L 65 26
+        Q 66 27.6, 69 28
+        C 78 36, 88 52, 94 76
+        C 100 102, 102 138, 100 168
+        C 98 192, 86 210, 70 214
+        C 60 216, 50 216, 40 214
+        C 24 210, 12 192, 10 168
+        C 8 138, 10 102, 16 76
+        C 22 52, 32 36, 41 28
+        Q 44 27.6, 45 26
+        L 45 18
+        Z`;
+
   return `
     <svg viewBox="${viewBox}" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
       <defs>
@@ -401,54 +432,44 @@ function ketchupGunSVG(opts = {}) {
           <stop offset="55%" stop-color="#e6342a"/>
           <stop offset="100%" stop-color="#9a1a1a"/>
         </radialGradient>
+        <clipPath id="bottleClip">
+          <path d="${bottlePath}"/>
+        </clipPath>
       </defs>
 
-      <!-- =============== 본체 (호리병/원뿔, 둥근 어깨) =============== -->
-      <!-- 본체 fill — 위 좁고 어깨 둥글게, 아래 빵빵 -->
-      <path id="bottleShape" d="
-        M 41 28
-        C 32 36, 22 52, 16 76
-        C 10 102, 8 138, 10 168
-        C 12 192, 24 210, 40 214
-        C 50 216, 60 216, 70 214
-        C 86 210, 98 192, 100 168
-        C 102 138, 100 102, 94 76
-        C 88 52, 78 36, 69 28
-        Z"
+      <!-- =============== 본체 (+ 스파우트, 까진 모드) =============== -->
+      <path id="bottleShape" d="${bottlePath}"
         fill="url(#bottleBody)" stroke="#3a0a08" stroke-width="1.2" stroke-linejoin="round"/>
 
-      <!-- 본체 광택 (radial highlight, 좌상단) -->
-      <path d="
-        M 41 28
-        C 32 36, 22 52, 16 76
-        C 10 102, 8 138, 10 168
-        C 12 192, 24 210, 40 214
-        C 50 216, 60 216, 70 214
-        C 86 210, 98 192, 100 168
-        C 102 138, 100 102, 94 76
-        C 88 52, 78 36, 69 28
-        Z" fill="url(#bottleShine)"/>
-
-      <!-- 좌상단 부드러운 흰 하이라이트 (몸체 곡선 따라) -->
-      <path d="M 26 50 C 20 80, 16 120, 18 160 C 19 184, 22 200, 28 208"
-            fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="5" stroke-linecap="round"/>
-      <!-- 보조 하이라이트 -->
-      <path d="M 34 60 C 30 90, 28 130, 30 168"
-            fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="1.8" stroke-linecap="round"/>
-      <!-- sparkle 점 -->
-      <ellipse cx="22" cy="80" rx="2.2" ry="4.5" fill="rgba(255,255,255,0.85)"/>
-      <ellipse cx="30" cy="58" rx="1.2" ry="2.6" fill="rgba(255,255,255,0.8)"/>
-
-      <!-- 우측 부드러운 그림자 -->
-      <path d="M 90 56 C 94 90, 96 134, 94 172 C 92 196, 86 208, 80 212"
-            fill="none" stroke="rgba(0,0,0,0.26)" stroke-width="3.2" stroke-linecap="round"/>
+      <!-- 광택/하이라이트 — 본체 윤곽 안으로만 클리핑 (삐져나옴 방지) -->
+      <g clip-path="url(#bottleClip)">
+        <path d="${bottlePath}" fill="url(#bottleShine)"/>
+        <!-- 좌상단 부드러운 흰 하이라이트 -->
+        <path d="M 26 50 C 20 80, 16 120, 18 160 C 19 184, 22 200, 28 208"
+              fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="5" stroke-linecap="round"/>
+        <!-- 보조 하이라이트 -->
+        <path d="M 34 60 C 30 90, 28 130, 30 168"
+              fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="1.8" stroke-linecap="round"/>
+        <!-- sparkle 점 -->
+        <ellipse cx="22" cy="80" rx="2.2" ry="4.5" fill="rgba(255,255,255,0.85)"/>
+        <ellipse cx="30" cy="58" rx="1.2" ry="2.6" fill="rgba(255,255,255,0.8)"/>
+        <!-- 우측 부드러운 그림자 -->
+        <path d="M 90 56 C 94 90, 96 134, 94 172 C 92 196, 86 208, 80 212"
+              fill="none" stroke="rgba(0,0,0,0.26)" stroke-width="3.2" stroke-linecap="round"/>
+        ${withCap ? '' : `
+        <!-- 스파우트 좌측 하이라이트 -->
+        <path d="M 48 19 L 48 25" stroke="rgba(255,255,255,0.7)" stroke-width="1.4" stroke-linecap="round"/>
+        <!-- 스파우트 우측 그림자 -->
+        <path d="M 62 19 L 62 25" stroke="rgba(0,0,0,0.22)" stroke-width="1" stroke-linecap="round"/>
+        `}
+      </g>
 
       ${withCap ? '' : `
-      <!-- 발사구 (뚜껑 까진 상태 — 검은 입구 노출) -->
-      <ellipse cx="55" cy="28.2" rx="11.5" ry="3" fill="#0a0202"/>
-      <ellipse cx="55" cy="27.6" rx="8" ry="1.6" fill="#000"/>
+      <!-- 발사구 (스파우트 상단 검은 구멍) -->
+      <ellipse cx="55" cy="16" rx="9.5" ry="2.2" fill="#0a0202"/>
+      <ellipse cx="55" cy="15.6" rx="6.5" ry="1.1" fill="#000"/>
       <!-- 입구 안쪽 살짝 빛 -->
-      <ellipse cx="55" cy="29.4" rx="9" ry="0.8" fill="rgba(255,255,255,0.18)"/>
+      <ellipse cx="55" cy="17" rx="7" ry="0.5" fill="rgba(255,255,255,0.18)"/>
       `}
 
       <!-- =============== 라벨 (방패형 + 흰 테두리) =============== -->
