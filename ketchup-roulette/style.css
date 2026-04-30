@@ -1059,15 +1059,31 @@ body::after {
   0%, 100% { transform: translateX(-50%) translateY(0); }
   50%      { transform: translateX(-50%) translateY(-3px); }
 }
-/* 격발: 강한 압착 → 반동 → 복귀 (idle 덮어씀) */
+/* 격발: 말랑 squeeze → 반동 → 복귀 (idle 덮어씀) */
 .ketchup-fixed.shoot {
-  animation: gunShoot .45s cubic-bezier(.4, 1.4, .5, 1);
+  animation: gunShoot .55s cubic-bezier(.4, 1.4, .5, 1);
 }
 @keyframes gunShoot {
   0%   { transform: translateX(-50%) scaleX(1)    scaleY(1)    translateY(0); }
-  20%  { transform: translateX(-50%) scaleX(0.78) scaleY(1.14) translateY(-4px); }   /* 강한 압착 */
-  55%  { transform: translateX(-50%) scaleX(1.08) scaleY(0.94) translateY(14px); }   /* 발사 후 반동 */
+  18%  { transform: translateX(-50%) scaleX(0.72) scaleY(1.20) translateY(-6px); }   /* 강한 말랑 압착 */
+  35%  { transform: translateX(-50%) scaleX(0.82) scaleY(1.10) translateY(-2px); }   /* 살짝 풀림 */
+  60%  { transform: translateX(-50%) scaleX(1.10) scaleY(0.92) translateY(16px); }   /* 발사 후 반동 */
+  82%  { transform: translateX(-50%) scaleX(0.97) scaleY(1.02) translateY(2px); }    /* 진동 잔여 */
   100% { transform: translateX(-50%) scaleX(1)    scaleY(1)    translateY(0); }
+}
+
+/* 캡 플립 — 발사 시 흰 뚜껑이 뒤로 젖혀짐 (좌측 힌지 회전) */
+.ketchup-fixed .bottle-cap-group {
+  transition: transform .25s ease-out;
+}
+.ketchup-fixed.shoot .bottle-cap-group {
+  animation: capFlip .55s cubic-bezier(.4, 1.4, .5, 1);
+}
+@keyframes capFlip {
+  0%   { transform: rotate(0deg); }
+  18%  { transform: rotate(-48deg); }
+  60%  { transform: rotate(-32deg); }
+  100% { transform: rotate(0deg); }
 }
 
 /* 모바일 — 비례 줄여도 토스터·식빵 스케일 유지 */
