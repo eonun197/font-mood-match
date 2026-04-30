@@ -1149,7 +1149,18 @@ async function fireOneTurn(idx, fast) {
 function showResult() {
   const list = document.getElementById('winnerList');
   list.innerHTML = '';
-  if (state.hitNames.length === 0) {
+  const n = state.hitNames.length;
+
+  // 인원수별 사이즈 단계: lg(1-3) / md(4-5) / sm(6-8) / xs(9+)
+  // 6+ 부터 zigzag 갱단 연출
+  let size = 'size-lg';
+  if      (n >= 9) size = 'size-xs';
+  else if (n >= 6) size = 'size-sm';
+  else if (n >= 4) size = 'size-md';
+  list.className = 'winner-list ' + size + (n >= 6 ? ' zigzag' : '');
+  list.dataset.count = String(n);
+
+  if (n === 0) {
     const li = document.createElement('li');
     li.className = 'no-winner';
     li.innerHTML = '<span class="winner-name">— NO ONE WAS COVERED IN KETCHUP —</span>';

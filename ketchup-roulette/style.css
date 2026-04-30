@@ -1570,23 +1570,74 @@ body::after {
 .winner-list {
   list-style: none;
   margin: 0;
-  padding: 4px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 14px;
-  justify-items: center;
+  padding: 8px 4px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
   border: none;
 }
 .winner-list li {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: transparent;
   border: none;
   padding: 0;
-  width: 100%;
-  max-width: 200px;
+  flex: 0 0 auto;
+  width: 160px;
+  position: relative;
+  transition: transform .2s ease;
+}
+
+/* === 인원별 사이즈 단계 === */
+/* 1-3명: 크게 */
+.winner-list.size-lg              { gap: 16px 18px; }
+.winner-list.size-lg li           { width: 162px; }
+.winner-list.size-lg .winner-no   { font-size: 14px; }
+.winner-list.size-lg .winner-name { font-size: 17px; }
+.winner-list.size-lg .winner-info { padding: 6px 12px; gap: 3px; }
+
+/* 4-5명: 중간 */
+.winner-list.size-md              { gap: 10px 12px; }
+.winner-list.size-md li           { width: 124px; }
+.winner-list.size-md .winner-no   { font-size: 11px; }
+.winner-list.size-md .winner-name { font-size: 13px; }
+.winner-list.size-md .winner-info { padding: 4px 8px; gap: 2px; }
+
+/* 6-8명: 작게 (옹기종기 + 지그재그 시작) */
+.winner-list.size-sm              { gap: 6px 4px; }
+.winner-list.size-sm li           { width: 102px; }
+.winner-list.size-sm .winner-no   { font-size: 9px; }
+.winner-list.size-sm .winner-name { font-size: 11px; }
+.winner-list.size-sm .winner-info { padding: 3px 5px; gap: 1px; }
+
+/* 9+명: 더 작게 (식빵 갱단) */
+.winner-list.size-xs              { gap: 4px 2px; }
+.winner-list.size-xs li           { width: 84px; }
+.winner-list.size-xs .winner-no   { font-size: 8px; }
+.winner-list.size-xs .winner-name { font-size: 9.5px; letter-spacing: 0; }
+.winner-list.size-xs .winner-info { padding: 2px 4px; gap: 0; }
+
+/* === 6+ : 식빵 갱단 zigzag (앞줄 뒷줄 겹쳐서 서기) === */
+.winner-list.zigzag li {
+  z-index: 2;
+}
+.winner-list.zigzag li:nth-child(even) {
+  transform: translateY(-14px) rotate(2deg);
+  margin-left: -16px;
+  z-index: 1;
+}
+.winner-list.zigzag li:nth-child(odd) {
+  transform: translateY(0) rotate(-1.5deg);
+}
+.winner-list.zigzag li:first-child { margin-left: 0; }
+/* 더 빽빽한 9+는 살짝 더 겹침 */
+.winner-list.size-xs.zigzag li:nth-child(even) {
+  transform: translateY(-10px) rotate(2deg);
+  margin-left: -14px;
 }
 
 /* 케찹 식빵 mugshot — 흰 배경 없이 종이 위에 직접 (현상수배 일러스트처럼) */
@@ -1619,7 +1670,6 @@ body::after {
 
 .winner-list .winner-no {
   font-family: "Bevan", "Black Ops One", serif;
-  font-size: 14px;
   color: var(--ketchup-shine);
   letter-spacing: 0.06em;
   line-height: 1;
@@ -1627,7 +1677,6 @@ body::after {
 .winner-list .winner-name {
   font-family: "Hahmlet", serif;
   font-weight: 800;
-  font-size: 18px;
   letter-spacing: 0.02em;
   color: var(--paper-light);
   line-height: 1.1;
