@@ -462,22 +462,22 @@ body::after {
   cursor: grab;
 }
 .count-value {
-  font-family: "Black Ops One", "Bevan", sans-serif;
-  font-size: clamp(20px, 5vw, 28px);
+  font-family: "Bevan", "Black Ops One", serif;
+  font-size: clamp(20px, 5vw, 30px);
   text-align: center;
-  color: #fff5e0;
+  color: var(--ketchup-deep);
   letter-spacing: 0.04em;
   width: 100%;
   max-width: 72px;
-  padding: 6px 4px;
-  background: rgba(20, 10, 6, 0.72);
-  border: 2px solid rgba(255, 245, 220, 0.28);
-  border-radius: 6px;
+  padding: 5px 4px;
+  background: #fffaf0;
+  border: 2.5px solid var(--ketchup);
+  border-radius: 4px;
   outline: none;
   -moz-appearance: textfield;
   appearance: textfield;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.25);
-  transition: border-color .15s ease, box-shadow .15s ease;
+  box-shadow: 0 2px 0 var(--ketchup-deep), 0 4px 8px rgba(40, 25, 10, 0.12);
+  transition: transform .08s ease, box-shadow .12s ease, border-color .15s ease;
   box-sizing: border-box;
 }
 .count-value::-webkit-outer-spin-button,
@@ -486,14 +486,15 @@ body::after {
   margin: 0;
 }
 .count-value:focus {
-  border-color: var(--ketchup);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 0 0 3px rgba(216, 54, 42, 0.25);
+  border-color: var(--ketchup-deep);
+  background: #fff;
+  box-shadow: 0 2px 0 var(--ketchup-deep), 0 0 0 3px rgba(216, 54, 42, 0.22);
 }
 .count-value.branded {
   font-family: "Bevan", "Black Ops One", serif;
 }
 @media (max-width: 480px) {
-  .count-value { max-width: 64px; padding: 5px 3px; }
+  .count-value { max-width: 64px; padding: 4px 3px; }
 }
 
 /* 슬라이더 라벨 옆 영문 부제 */
@@ -1048,41 +1049,33 @@ body::after {
   height: auto;
 }
 .panel-br.spin .bottle-spin {
-  animation: bottleSpin 1.05s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: bottleSpin 1.0s cubic-bezier(0.16, 0.84, 0.24, 1) forwards;
 }
 @keyframes bottleSpin {
   0%   {
     opacity: 0;
-    transform: rotate(0deg) rotateY(0deg) scale(0.7);
+    transform: rotate(0deg) scale(0.7);
     filter: blur(0) drop-shadow(0 4px 8px rgba(20, 4, 4, 0.3));
   }
   10%  {
     opacity: 1;
-    transform: rotate(160deg) rotateY(18deg) scale(1);
-    filter: blur(3px) drop-shadow(0 0 16px rgba(230, 52, 42, 0.85))
-            drop-shadow(0 0 28px rgba(230, 52, 42, 0.5));
+    transform: rotate(160deg) scale(1);
+    filter: blur(2px) drop-shadow(0 0 14px rgba(230, 52, 42, 0.7));
   }
-  32%  {
+  35%  {
     opacity: 1;
-    transform: rotate(420deg) rotateY(-16deg) scale(1.07);
-    filter: blur(4px) drop-shadow(0 0 22px rgba(230, 52, 42, 0.95))
-            drop-shadow(0 0 40px rgba(230, 52, 42, 0.55));
+    transform: rotate(560deg) scale(1);
+    filter: blur(3px) drop-shadow(0 0 18px rgba(230, 52, 42, 0.85));
   }
-  55%  {
+  70%  {
     opacity: 1;
-    transform: rotate(580deg) rotateY(14deg) scale(1.05);
-    filter: blur(3px) drop-shadow(0 0 14px rgba(230, 52, 42, 0.7))
-            drop-shadow(0 0 24px rgba(230, 52, 42, 0.35));
-  }
-  78%  {
-    opacity: 1;
-    transform: rotate(680deg) rotateY(-5deg) scale(1.02);
-    filter: blur(1px) drop-shadow(0 0 6px rgba(230, 52, 42, 0.4));
+    transform: rotate(900deg) scale(1);
+    filter: blur(1.5px) drop-shadow(0 0 8px rgba(230, 52, 42, 0.4));
   }
   100% {
     opacity: 1;
-    transform: rotate(720deg) rotateY(0deg) scale(1);
-    filter: blur(0) drop-shadow(0 8px 18px rgba(40, 4, 4, 0.45));
+    transform: rotate(1080deg) scale(1);
+    filter: blur(0) drop-shadow(0 6px 14px rgba(40, 4, 4, 0.4));
   }
 }
 
@@ -1361,19 +1354,6 @@ body::after {
   100% { transform: translateX(-50%) scaleX(1)    scaleY(1)    translateY(0); }
 }
 
-/* 캡 플립 — 발사 시 흰 뚜껑이 뒤로 젖혀짐 (좌측 힌지 회전) */
-.ketchup-fixed .bottle-cap-group {
-  transition: transform .25s ease-out;
-}
-.ketchup-fixed.shoot .bottle-cap-group {
-  animation: capFlip .55s cubic-bezier(.4, 1.4, .5, 1);
-}
-@keyframes capFlip {
-  0%   { transform: rotate(0deg); }
-  18%  { transform: rotate(-48deg); }
-  60%  { transform: rotate(-32deg); }
-  100% { transform: rotate(0deg); }
-}
 
 /* 모바일 — 비례 줄여도 토스터·식빵 스케일 유지 */
 @media (max-width: 520px) {
