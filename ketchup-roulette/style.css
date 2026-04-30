@@ -179,18 +179,18 @@ body::after {
           mask-image: radial-gradient(ellipse at center, transparent 22%, black 50%);
 }
 .speed-lines.fire {
-  animation: speedLinesFlash .35s ease-out;
+  animation: speedLinesFlash .42s ease-out;
 }
 @keyframes speedLinesFlash {
-  0%   { opacity: 0; transform: scale(0.95); }
-  20%  { opacity: 1; transform: scale(1); }
+  0%   { opacity: 0; transform: scale(0.96); }
+  25%  { opacity: 0.45; transform: scale(1); }
   100% { opacity: 0; transform: scale(1.05); }
 }
 
 /* SFX 텍스트 — 만화적 효과음 (한글/영문 둘 다) */
 .sfx-text {
   position: fixed;
-  top: 38%;
+  top: 46%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0) rotate(-12deg);
   font-family: "Hahmlet", "Bevan", "Rye", serif;
@@ -413,10 +413,16 @@ body::after {
    ========================================================= */
 .slider-row {
   display: grid;
-  grid-template-columns: 130px 1fr 56px;
+  grid-template-columns: minmax(110px, 130px) 1fr 72px;
   align-items: center;
   gap: 14px;
   margin-bottom: 14px;
+}
+@media (max-width: 480px) {
+  .slider-row {
+    grid-template-columns: minmax(86px, 110px) 1fr 64px;
+    gap: 8px;
+  }
 }
 .slider-row label {
   font-family: "Hahmlet", "Bevan", serif;
@@ -457,21 +463,37 @@ body::after {
 }
 .count-value {
   font-family: "Black Ops One", "Bevan", sans-serif;
-  font-size: 32px;
+  font-size: clamp(20px, 5vw, 28px);
   text-align: center;
-  color: var(--ketchup-deep);
+  color: #fff5e0;
   letter-spacing: 0.04em;
+  width: 100%;
+  max-width: 72px;
+  padding: 6px 4px;
+  background: rgba(20, 10, 6, 0.72);
+  border: 2px solid rgba(255, 245, 220, 0.28);
+  border-radius: 6px;
+  outline: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.25);
+  transition: border-color .15s ease, box-shadow .15s ease;
+  box-sizing: border-box;
 }
-/* 불도장 — 살짝 회전 + 검댕/그을음 효과 */
+.count-value::-webkit-outer-spin-button,
+.count-value::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.count-value:focus {
+  border-color: var(--ketchup);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 0 0 3px rgba(216, 54, 42, 0.25);
+}
 .count-value.branded {
-  display: inline-block;
-  color: var(--ink);
-  text-shadow:
-    0 0 8px rgba(168, 93, 40, 0.6),
-    1px 1px 0 var(--ketchup-deep),
-    2px 2px 0 var(--ink);
-  transform: rotate(-3deg);
-  filter: drop-shadow(0 0 6px rgba(110, 56, 18, 0.3));
+  font-family: "Bevan", "Black Ops One", serif;
+}
+@media (max-width: 480px) {
+  .count-value { max-width: 64px; padding: 5px 3px; }
 }
 
 /* 슬라이더 라벨 옆 영문 부제 */
@@ -630,20 +652,31 @@ body::after {
   gap: 12px;
 }
 .ghost-btn {
-  background: transparent;
+  background: var(--paper-light);
   color: var(--ink);
-  border: 2px solid var(--ink);
+  border: 2.5px solid var(--ink);
   border-radius: 4px;
   font-family: "Hahmlet", serif;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 16px;
   letter-spacing: 0.04em;
   padding: 14px 24px;
   cursor: pointer;
-  transition: background .15s ease;
+  box-shadow: 0 3px 0 var(--ink), 0 5px 8px rgba(40, 25, 10, 0.15);
+  transition: transform .08s ease, box-shadow .08s ease, background .15s ease;
+}
+.ghost-btn::before {
+  content: "← ";
+  font-family: "Bevan", serif;
+  font-weight: normal;
+  margin-right: 2px;
 }
 .ghost-btn:hover {
-  background: rgba(40, 25, 10, 0.08);
+  background: rgba(243, 224, 179, 0.85);
+}
+.ghost-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink), 0 2px 4px rgba(40, 25, 10, 0.15);
 }
 
 /* 식빵 (미리보기 — 작은 사이즈) */
@@ -877,22 +910,24 @@ body::after {
     radial-gradient(ellipse at 65% 75%, #ffd0c0 0%, #e6342a 50%, #5a0808 100%);
 }
 
-/* ====== 사선 라인 ====== */
-.diagonal-line {
+/* ====== 사선 라인 (SVG: polygon 경계와 1:1 일치) ====== */
+.diagonal-svg {
   position: absolute;
-  top: 50%;
-  left: -10%;
-  width: 120%;
-  height: 16px;
-  background: #1a0a08;
-  transform: translateY(-50%) rotate(-19deg) scaleX(0);
-  transform-origin: center;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: 100;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.15), 0 6px 24px rgba(0,0,0,0.5);
-  transition: transform .35s cubic-bezier(.4, 1.4, .5, 1);
+  pointer-events: none;
+  filter: drop-shadow(0 4px 14px rgba(0,0,0,0.5));
 }
-.diagonal-line.enter {
-  transform: translateY(-50%) rotate(-19deg) scaleX(1);
+.diagonal-svg line {
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 1500;
+  stroke-width: 8;
+  transition: stroke-dashoffset .35s cubic-bezier(.4, 1.4, .5, 1);
+}
+.diagonal-svg.enter line {
+  stroke-dashoffset: 0;
 }
 
 /* ====== 좌상단: 레버 클로즈업 ====== */
@@ -1354,6 +1389,33 @@ body::after {
   .bread-popup.popped { transform: translateY(-610px); }
   .ketchup-fixed { width: 220px; height: 280px; bottom: -180px; }
   .action-scene { bottom: -62vh; }
+  /* 모바일 FIRE 버튼 — 손가락 친화적 */
+  .fire-btn {
+    right: 14px;
+    bottom: 14px;
+    padding: 18px 30px;
+    font-size: 20px;
+    border-radius: 6px;
+  }
+  .action-counter {
+    left: 14px;
+    bottom: 14px;
+    padding: 8px 14px;
+    font-size: 22px;
+  }
+}
+
+/* 토스터 덜컹 진동 (식빵 popup 순간) */
+.big-toaster-back.rattle,
+.big-toaster-front.rattle {
+  animation: toasterRattle .35s cubic-bezier(.36, 0, .66, 1);
+}
+@keyframes toasterRattle {
+  0%   { transform: translate(0, 0)    rotate(0); }
+  20%  { transform: translate(-3px, 1px) rotate(-0.4deg); }
+  45%  { transform: translate(3px, -1px) rotate(0.4deg); }
+  70%  { transform: translate(-2px, 1px) rotate(-0.2deg); }
+  100% { transform: translate(0, 0)    rotate(0); }
 }
 
 /* =========================================================

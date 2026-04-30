@@ -798,13 +798,15 @@ function syncNamesArray() {
 }
 
 function refreshTitle() {
-  countValueEl.textContent  = state.totalCount;
-  winnerValueEl.textContent = state.winnerCount;
+  countSlider.value         = state.totalCount;
+  countValueEl.value        = state.totalCount;
+  winnerValueEl.value       = state.winnerCount;
   winnerSlider.max          = state.totalCount;
+  winnerValueEl.max         = state.totalCount;
   if (state.winnerCount > state.totalCount) {
-    state.winnerCount  = state.totalCount;
-    winnerSlider.value = state.totalCount;
-    winnerValueEl.textContent = state.totalCount;
+    state.winnerCount   = state.totalCount;
+    winnerSlider.value  = state.totalCount;
+    winnerValueEl.value = state.totalCount;
   }
 }
 
@@ -814,7 +816,27 @@ countSlider.addEventListener('input', () => {
 });
 winnerSlider.addEventListener('input', () => {
   state.winnerCount = clamp(parseInt(winnerSlider.value, 10), 1, state.totalCount);
-  winnerValueEl.textContent = state.winnerCount;
+  winnerValueEl.value = state.winnerCount;
+});
+
+// 숫자 박스 직접 입력 — 양방향 동기화
+countValueEl.addEventListener('input', () => {
+  const v = parseInt(countValueEl.value, 10);
+  if (!Number.isFinite(v)) return;
+  state.totalCount = clamp(v, 1, MAX_COUNT);
+  refreshTitle();
+});
+countValueEl.addEventListener('blur', () => {
+  countValueEl.value = state.totalCount;
+});
+winnerValueEl.addEventListener('input', () => {
+  const v = parseInt(winnerValueEl.value, 10);
+  if (!Number.isFinite(v)) return;
+  state.winnerCount = clamp(v, 1, state.totalCount);
+  winnerSlider.value = state.winnerCount;
+});
+winnerValueEl.addEventListener('blur', () => {
+  winnerValueEl.value = state.winnerCount;
 });
 
 enterBtn.addEventListener('click', () => {
@@ -949,7 +971,7 @@ async function startStandoff() {
   // 컷신 노드
   const panelTL  = document.querySelector('.panel-tl');
   const panelBR  = document.querySelector('.panel-br');
-  const diag     = document.querySelector('.diagonal-line');
+  const diag     = document.querySelector('.diagonal-svg');
   const flashEl  = document.getElementById('comicFlash');
   const leverEl  = document.getElementById('leverCloseup');
   const bottleEl = document.getElementById('bottleSpin');
@@ -1110,11 +1132,16 @@ async function fireOneTurn(idx, fast) {
   panCameraToSlot(idx);
   await sleep(fast ? 120 : 800);
 
-  // 2. 식빵 퓽! (Quick Draw에선 슬로모션 효과 생략)
+  // 2. 식빵 퓽! (Quick Draw에선 슬로모션 효과 생략) + 토스터 덜컹 진동
   if (!fast) {
     bwOn();
     fireSpeedLines();
   }
+  bigToasterBackEl.classList.remove('rattle');
+  bigToasterFrontEl.classList.remove('rattle');
+  void bigToasterFrontEl.offsetWidth;
+  bigToasterBackEl.classList.add('rattle');
+  bigToasterFrontEl.classList.add('rattle');
   bread.classList.add('popped');
   await sleep(fast ? 100 : 800);
 
