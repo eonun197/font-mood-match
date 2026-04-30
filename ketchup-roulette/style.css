@@ -819,24 +819,289 @@ body::after {
 }
 
 /* =========================================================
-   READY 줌 스테이지
+   READY 화면 — 만화 2분할 컷신
    ========================================================= */
-.zoom-stage {
+#screen-ready {
+  position: fixed;
+  inset: 0;
+  padding: 0;
+  background: #1a0a08;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
+}
+.comic-split {
   position: relative;
   width: 100%;
   height: 100%;
+}
+
+/* 패널 공통 */
+.comic-panel {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* 좌상단 패널 — 비스듬한 사선 위쪽 */
+.panel-tl {
+  clip-path: polygon(0 0, 100% 0, 100% 32%, 0 68%);
+  transform: translate(-100%, -10%);
+  transition: transform .28s cubic-bezier(.4, 1.4, .5, 1);
+}
+.panel-tl.enter { transform: translate(0, 0); }
+
+/* 우하단 패널 — 사선 아래쪽 */
+.panel-br {
+  clip-path: polygon(100% 32%, 100% 100%, 0 100%, 0 68%);
+  transform: translate(100%, 10%);
+  transition: transform .28s cubic-bezier(.4, 1.4, .5, 1);
+}
+.panel-br.enter { transform: translate(0, 0); }
+
+/* 패널 배경 — 빈티지 만화 페이지 톤 */
+.panel-bg {
+  position: absolute;
+  inset: 0;
+}
+.panel-bg.tl {
+  background:
+    repeating-linear-gradient(45deg, rgba(0,0,0,.05) 0 2px, transparent 2px 7px),
+    radial-gradient(ellipse at 30% 35%, #fdf2c8 0%, #e8c878 60%, #b07820 100%);
+}
+.panel-bg.br {
+  background:
+    repeating-radial-gradient(circle at 65% 75%, rgba(0,0,0,.08) 0 1.5px, transparent 1.5px 5px),
+    radial-gradient(ellipse at 65% 75%, #ffd0c0 0%, #e6342a 50%, #5a0808 100%);
+}
+
+/* ====== 사선 라인 ====== */
+.diagonal-line {
+  position: absolute;
+  top: 50%;
+  left: -10%;
+  width: 120%;
+  height: 16px;
+  background: #1a0a08;
+  transform: translateY(-50%) rotate(-19deg) scaleX(0);
+  transform-origin: center;
+  z-index: 100;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.15), 0 6px 24px rgba(0,0,0,0.5);
+  transition: transform .35s cubic-bezier(.4, 1.4, .5, 1);
+}
+.diagonal-line.enter {
+  transform: translateY(-50%) rotate(-19deg) scaleX(1);
+}
+
+/* ====== 좌상단: 레버 클로즈업 ====== */
+.lever-closeup {
+  position: absolute;
+  left: 6%;
+  top: 6%;
+  width: 56%;
+  max-width: 480px;
+  z-index: 6;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  perspective: 1200px;
 }
-.toaster-zoom {
-  transform: scale(1) rotateX(8deg);
-  transform-origin: 75% 65%;  /* 측면 레버 */
-  transition: transform 1s cubic-bezier(.5, 0, .4, 1);
+.lever-closeup svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 16px rgba(40, 20, 8, 0.5));
 }
-.toaster-zoom.zoom-in {
-  transform: scale(3) rotateX(8deg) translateX(-12%);
+.lever-closeup .lever-knob {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.panel-tl.click .lever-closeup .lever-knob {
+  animation: leverDown .42s cubic-bezier(.5, 0, .85, 1) forwards;
+}
+@keyframes leverDown {
+  0%   { transform: translateY(0); }
+  88%  { transform: translateY(150px); }
+  100% { transform: translateY(146px); }
+}
+
+/* 집중선 (action lines, 좌상단 패널 안에서 폭발) */
+.action-lines {
+  position: absolute;
+  left: 12%;
+  top: 12%;
+  width: 60%;
+  height: 60%;
+  background: repeating-conic-gradient(from 0deg at 50% 50%,
+    transparent 0deg 5deg,
+    #1a0a08 5deg 8deg);
+  -webkit-mask: radial-gradient(circle at 50% 50%, transparent 22%, black 55%, transparent 95%);
+          mask: radial-gradient(circle at 50% 50%, transparent 22%, black 55%, transparent 95%);
+  opacity: 0;
+  transform: scale(0.4);
+  transform-origin: center;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 50%;
+}
+.panel-tl.click .action-lines {
+  animation: actionLinesBurst .55s ease-out forwards;
+}
+@keyframes actionLinesBurst {
+  0%   { opacity: 0; transform: scale(0.4) rotate(0); }
+  35%  { opacity: 0.95; transform: scale(1.1) rotate(15deg); }
+  100% { opacity: 0.7; transform: scale(1.45) rotate(35deg); }
+}
+
+/* 먼지 puff */
+.comic-dust {
+  position: absolute;
+  left: 6%;
+  bottom: 10%;
+  width: 70%;
+  height: 30%;
+  pointer-events: none;
+  z-index: 7;
+}
+.comic-dust .dust {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255, 245, 220, 0.92);
+  box-shadow: 0 0 0 1.5px rgba(40, 20, 8, 0.5), 0 0 12px rgba(255, 245, 220, 0.6);
+  opacity: 0;
+}
+.comic-dust .d1 { left: 12%; bottom: 4%;  width: 14px; height: 14px; }
+.comic-dust .d2 { left: 28%; bottom: 14%; width: 22px; height: 22px; }
+.comic-dust .d3 { left: 42%; bottom: 6%;  width: 12px; height: 12px; }
+.comic-dust .d4 { left: 56%; bottom: 18%; width: 18px; height: 18px; }
+.comic-dust .d5 { left: 22%; bottom: 24%; width: 10px; height: 10px; }
+.comic-dust .d6 { left: 50%; bottom: 4%;  width: 14px; height: 14px; }
+.panel-tl.click .dust {
+  animation: dustPuff .65s ease-out forwards;
+}
+.panel-tl.click .d2 { animation-delay: .04s; }
+.panel-tl.click .d3 { animation-delay: .08s; }
+.panel-tl.click .d4 { animation-delay: .06s; }
+.panel-tl.click .d5 { animation-delay: .10s; }
+.panel-tl.click .d6 { animation-delay: .03s; }
+@keyframes dustPuff {
+  0%   { opacity: 0; transform: translateY(0) scale(0.3); }
+  35%  { opacity: 1; transform: translateY(-14px) scale(1.05); }
+  100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
+}
+
+/* ====== 우하단: 케찹통 스핀 ====== */
+.bottle-spin {
+  position: absolute;
+  right: 8%;
+  bottom: 8%;
+  width: 36%;
+  max-width: 360px;
+  height: auto;
+  z-index: 6;
+  transform-origin: 50% 50%;
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+}
+.bottle-spin svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 12px 24px rgba(20, 4, 4, 0.5));
+}
+.panel-br.spin .bottle-spin {
+  animation: bottleSpin .80s cubic-bezier(.3, 0, .5, 1) forwards;
+}
+@keyframes bottleSpin {
+  0%   { opacity: 0; transform: rotate(-30deg) scale(0.5); filter: blur(0); }
+  18%  { opacity: 1; transform: rotate(80deg)  scale(1);   filter: blur(2px); }
+  50%  { opacity: 1; transform: rotate(220deg) scale(1.06); filter: blur(3.5px); }
+  82%  { opacity: 1; transform: rotate(360deg) scale(1);   filter: blur(0); }
+  100% { opacity: 1; transform: rotate(360deg) scale(1);   filter: blur(0); }
+}
+
+/* 우하단 스피드 호 (잔상) */
+.speed-arcs {
+  position: absolute;
+  right: 8%;
+  bottom: 8%;
+  width: 36%;
+  aspect-ratio: 1 / 1;
+  max-width: 360px;
+  border-radius: 50%;
+  border: 4px dashed rgba(255,255,255,0.6);
+  opacity: 0;
+  transform: scale(0.6);
+  z-index: 5;
+  pointer-events: none;
+}
+.panel-br.spin .speed-arcs {
+  animation: speedArcsAnim .8s ease-out forwards;
+}
+@keyframes speedArcsAnim {
+  0%   { opacity: 0; transform: scale(0.6) rotate(0); }
+  40%  { opacity: 0.85; transform: scale(1.1) rotate(180deg); }
+  100% { opacity: 0; transform: scale(1.4) rotate(540deg); }
+}
+
+/* ====== SFX 텍스트 ====== */
+.comic-sfx {
+  position: absolute;
+  font-family: "Bevan", serif;
+  color: #ffd200;
+  -webkit-text-stroke: 4px #1a0a08;
+  letter-spacing: 0.04em;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 6px 6px 0 #1a0a08;
+}
+.click-sfx {
+  font-size: clamp(48px, 8vw, 96px);
+  left: 28%;
+  top: 22%;
+  transform: rotate(-12deg) scale(0);
+}
+.spin-sfx {
+  font-size: clamp(48px, 8vw, 96px);
+  right: 30%;
+  bottom: 22%;
+  transform: rotate(8deg) scale(0);
+  color: #fff5e0;
+}
+.click-sfx.show {
+  animation: sfxPopL .45s cubic-bezier(.4, 1.6, .5, 1) forwards;
+}
+@keyframes sfxPopL {
+  0%   { opacity: 0; transform: rotate(-12deg) scale(0); }
+  60%  { opacity: 1; transform: rotate(-12deg) scale(1.25); }
+  100% { opacity: 1; transform: rotate(-12deg) scale(1); }
+}
+.spin-sfx.show {
+  animation: sfxPopR .45s cubic-bezier(.4, 1.6, .5, 1) forwards;
+}
+@keyframes sfxPopR {
+  0%   { opacity: 0; transform: rotate(8deg) scale(0); }
+  60%  { opacity: 1; transform: rotate(8deg) scale(1.25); }
+  100% { opacity: 1; transform: rotate(8deg) scale(1); }
+}
+
+/* ====== 마무리 플래시 ====== */
+.comic-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+.comic-flash.flash {
+  animation: comicFlashFinal .42s ease-out forwards;
+}
+@keyframes comicFlashFinal {
+  0%   { opacity: 0; }
+  35%  { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 /* =========================================================

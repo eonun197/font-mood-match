@@ -16,7 +16,7 @@ const state = {
 };
 
 // ---------- 화면 전환 ----------
-const screens = ['title', 'entry', 'ready', 'go', 'action', 'result'];
+const screens = ['title', 'entry', 'ready', 'action', 'result'];
 function showScreen(name) {
   screens.forEach(s => {
     const el = document.getElementById(`screen-${s}`);
@@ -859,49 +859,126 @@ bakeBtn.addEventListener('click', () => {
 });
 
 /* =========================================================
-   SCREEN 2/3: STANDOFF (READY → DRAW)
+   SCREEN 2: 만화 컷신 (사선 2분할 — 레버 click + 케찹통 spin)
    ========================================================= */
 
-const readyCue   = document.getElementById('readyCue');
-const goCue      = document.getElementById('goCue');
-const toasterZoom = document.getElementById('toasterZoom');
+/* 토스터 측면 패널 + 레버 손잡이 클로즈업 */
+function leverCloseupSVG() {
+  return `
+    <svg viewBox="0 0 280 360" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="panelSide" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="#7a3a12"/>
+          <stop offset="50%"  stop-color="#d28030"/>
+          <stop offset="100%" stop-color="#6a2a08"/>
+        </linearGradient>
+        <linearGradient id="panelGloss" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="rgba(255,255,255,0.35)"/>
+          <stop offset="50%"  stop-color="rgba(255,255,255,0)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0.25)"/>
+        </linearGradient>
+        <linearGradient id="knobMetal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#fff8e6"/>
+          <stop offset="48%"  stop-color="#ece1c2"/>
+          <stop offset="100%" stop-color="#7a6e4e"/>
+        </linearGradient>
+        <linearGradient id="slotShadow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#0a0402"/>
+          <stop offset="100%" stop-color="#3a1808"/>
+        </linearGradient>
+      </defs>
+
+      <!-- 토스터 측면 패널 -->
+      <rect x="0" y="0" width="280" height="360" rx="14" fill="url(#panelSide)" stroke="#3a1808" stroke-width="3"/>
+      <rect x="0" y="0" width="280" height="360" rx="14" fill="url(#panelGloss)"/>
+
+      <!-- 리벳 4개 -->
+      <circle cx="28"  cy="28"  r="6" fill="#3a1808" stroke="#1a0a04" stroke-width="2"/>
+      <circle cx="252" cy="28"  r="6" fill="#3a1808" stroke="#1a0a04" stroke-width="2"/>
+      <circle cx="28"  cy="332" r="6" fill="#3a1808" stroke="#1a0a04" stroke-width="2"/>
+      <circle cx="252" cy="332" r="6" fill="#3a1808" stroke="#1a0a04" stroke-width="2"/>
+      <!-- 리벳 광택 -->
+      <circle cx="26"  cy="26"  r="1.5" fill="rgba(255,255,255,0.7)"/>
+      <circle cx="250" cy="26"  r="1.5" fill="rgba(255,255,255,0.7)"/>
+
+      <!-- 레버 슬롯 (수직 홈) -->
+      <rect x="156" y="56" width="34" height="232" rx="17"
+            fill="url(#slotShadow)" stroke="#1a0a04" stroke-width="2.5"/>
+      <rect x="162" y="62" width="22" height="220" rx="11" fill="#0a0402"/>
+
+      <!-- 슬롯 마커 (▲ 위, ▼ 아래) -->
+      <text x="173" y="80" font-family="'Bevan', serif" font-size="14" fill="#1a0a04" text-anchor="middle">▲</text>
+      <text x="173" y="278" font-family="'Bevan', serif" font-size="14" fill="#1a0a04" text-anchor="middle">▼</text>
+
+      <!-- 레버 손잡이 -->
+      <g class="lever-knob">
+        <rect x="116" y="68" width="84" height="48" rx="11"
+              fill="url(#knobMetal)" stroke="#1a0a04" stroke-width="3"/>
+        <line x1="132" y1="84" x2="184" y2="84" stroke="#1a0a04" stroke-width="2"/>
+        <line x1="132" y1="92" x2="184" y2="92" stroke="#1a0a04" stroke-width="2"/>
+        <line x1="132" y1="100" x2="184" y2="100" stroke="#1a0a04" stroke-width="2"/>
+        <rect x="124" y="74" width="68" height="6" rx="3" fill="rgba(255,255,255,0.85)"/>
+      </g>
+    </svg>
+  `;
+}
 
 async function startStandoff() {
-  toasterZoom.classList.remove('zoom-in');
-  toasterZoom.innerHTML = toasterSVG(state.totalCount, { height: 280, leverDown: false });
+  // 컷신 노드
+  const panelTL  = document.querySelector('.panel-tl');
+  const panelBR  = document.querySelector('.panel-br');
+  const diag     = document.querySelector('.diagonal-line');
+  const clickSfx = document.querySelector('.click-sfx');
+  const spinSfx  = document.querySelector('.spin-sfx');
+  const flashEl  = document.getElementById('comicFlash');
+  const leverEl  = document.getElementById('leverCloseup');
+  const bottleEl = document.getElementById('bottleSpin');
+
+  // 재진입 대비 초기화
+  panelTL.classList.remove('enter', 'click');
+  panelBR.classList.remove('enter', 'spin');
+  diag.classList.remove('enter');
+  clickSfx.classList.remove('show');
+  spinSfx.classList.remove('show');
+  flashEl.classList.remove('flash');
+
+  // SVG 주입 (매 회 신규)
+  leverEl.innerHTML  = leverCloseupSVG();
+  bottleEl.innerHTML = ketchupGunSVG();
+
   showScreen('ready');
 
-  flashCue(readyCue);
-  await sleep(400);
+  // reflow
+  void panelTL.offsetWidth;
 
-  // 카메라가 레버 쪽으로 줌인 (1초)
-  toasterZoom.classList.add('zoom-in');
-  await sleep(950);
+  // 1) 패널 + 사선 입장
+  panelTL.classList.add('enter');
+  panelBR.classList.add('enter');
+  diag.classList.add('enter');
+  await sleep(260);
 
-  // 레버 클릭 — 흔들림 + 화면 흔들림
-  toasterZoom.innerHTML = toasterSVG(state.totalCount, { height: 280, leverDown: true });
-  toasterZoom.classList.add('zoom-in');
+  // 2) 좌상단 — 레버 click + 집중선 + 먼지 + SFX
+  panelTL.classList.add('click');
+  clickSfx.classList.add('show');
   shakeCamera(true);
-  await sleep(550);
 
-  // DRAW! 화면으로
-  showScreen('go');
-  flashCue(goCue);
-  await sleep(900);
+  // 살짝 늦게 우하단 — 케찹통 360° 스핀 + SFX
+  await sleep(80);
+  panelBR.classList.add('spin');
+  spinSfx.classList.add('show');
 
-  // ACTION 진입
+  // 3) 양쪽 모션 종료 대기
+  await sleep(760);
+
+  // 4) 마무리 플래시 → 본 게임 진입
+  flashEl.classList.add('flash');
   setupAction();
+  await sleep(220);
   showScreen('action');
 }
 
-function flashCue(el) {
-  el.classList.remove('show');
-  void el.offsetWidth;
-  el.classList.add('show');
-}
-
 /* =========================================================
-   SCREEN 4: ACTION
+   SCREEN 3: ACTION
    ========================================================= */
 
 const actionSceneEl     = document.getElementById('actionScene');
