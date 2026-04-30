@@ -1,0 +1,1360 @@
+/* =========================================================
+   KETCHUP SHOWDOWN — High Noon / 서부극 시네마틱
+   ========================================================= */
+
+:root {
+  /* 밝은 빈티지 크림 팔레트 (Bright Vintage) */
+  --paper:        #faf2dc;     /* 메인 배경 — 밝은 크림 */
+  --paper-light:  #fdf8e7;     /* 카드 안쪽 더 밝게 */
+  --paper-deep:   #ead7a8;     /* 종이 그림자 톤 */
+  --paper-shadow: #c5a972;
+  --paper-edge:   #b09058;
+
+  --kraft:        #b08a52;
+  --kraft-deep:   #7a5530;
+
+  --ink:          #3a2818;     /* 진한 다크브라운 (타이포) */
+  --ink-soft:     #6e5230;
+  --ink-faded:    #9a8458;
+
+  /* 녹슨 무쇠 (좀 더 밝게) */
+  --iron:         #3a2a18;
+  --iron-mid:     #5a4225;
+  --iron-light:   #7a5e38;
+  --iron-shine:   #a48648;
+  --rust:         #b86528;
+  --rust-deep:    #7e3e14;
+
+  /* 케찹 — 선명한 살짝 바랜 빨강 */
+  --ketchup:      #d8362a;
+  --ketchup-deep: #a82622;
+  --ketchup-shine:#e8483c;
+
+  /* 그림자 / 라디우스 */
+  --shadow:       0 14px 32px rgba(60, 40, 20, 0.28);
+  --shadow-soft:  0 6px 14px rgba(60, 40, 20, 0.18);
+  --radius:       6px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Hahmlet", "Bevan", "Jua", serif;
+  font-weight: 600;
+  overflow: hidden;
+}
+button { font-family: inherit; cursor: pointer; }
+input  { font-family: inherit; }
+
+/* =========================================================
+   배경 — 빛바랜 종이 + 먼지 텍스처
+   ========================================================= */
+
+/* 배경 — 부드러운 미색 종이결 (노이즈 톤다운) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    /* 부드러운 코너 색조 (살짝 따뜻한 그라디언트) */
+    radial-gradient(ellipse at 25% 20%, rgba(196, 162, 100, 0.10) 0%, transparent 45%),
+    radial-gradient(ellipse at 75% 80%, rgba(176, 140, 78, 0.12) 0%, transparent 50%),
+    /* fine grain (아주 미세) */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 360'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch' seed='3'/><feColorMatrix values='0 0 0 0 0.30   0 0 0 0 0.22   0 0 0 0 0.10   0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: auto, auto, 360px 360px;
+  opacity: 1;
+  mix-blend-mode: multiply;
+}
+
+
+/* 비네팅 (모서리 살짝 어둠 — 부드럽게) */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  background:
+    radial-gradient(ellipse at center, transparent 55%, rgba(80, 55, 25, 0.18) 100%);
+}
+
+/* 먼지 입자 — 작고 듬성듬성, 유기적 곡선 블롭 */
+/* 1차 레이어: 미세 입자 (총 7개, 블롭 ~2-3px 폭) */
+.dust-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9996;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'><path d='M80,90 Q81.5,89 82.5,89.5 Q83,91 81.5,91.5 Q80,91 80,90 Z' fill='%23a07a3e' opacity='0.78'/><path d='M250,140 Q252,139 253.5,140.5 Q252.5,142 250.5,141.5 Q249,141 250,140 Z' fill='%238a6f3a' opacity='0.45'/><path d='M180,310 Q181.5,309.5 182.5,310.5 Q181.5,312 180,311.5 Q179,311 180,310 Z' fill='%23a07a3e' opacity='0.62'/><path d='M430,80 Q431.5,79 432.5,80 Q432,81.5 430.5,81 Q429.5,80.5 430,80 Z' fill='%237a5530' opacity='0.85'/><path d='M380,420 Q381.5,419 382.5,420 Q382,421.5 380.5,421 Q379,420.5 380,420 Z' fill='%238a6f3a' opacity='0.35'/><path d='M520,260 Q521,259 522,259.5 Q521.5,261 520.5,260.5 Q519.5,260 520,260 Z' fill='%23a07a3e' opacity='0.7'/><path d='M70,500 Q71,499 72,499.5 Q71.5,500.5 70.5,500.5 Q70,500 70,500 Z' fill='%237a5530' opacity='0.55'/></svg>");
+  background-size: 600px 600px;
+  opacity: 1;
+  animation: dustDrift 28s linear infinite;
+}
+@keyframes dustDrift {
+  from { background-position: 0 0; }
+  to   { background-position: 600px 320px; }
+}
+
+/* 2차 레이어 — 살짝 큰 조각, 느리게 다른 방향 (총 5개, ~3-4px 폭) */
+.dust-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 700 700'><path d='M120,150 Q122,148.5 124,150 Q123,152 121,151.5 Q120,151 120,150 Z' fill='%237a5530' opacity='0.5'/><path d='M540,220 Q542.5,219 544,221 Q543,223 541,222.5 Q539.5,221 540,220 Z' fill='%23a07a3e' opacity='0.7'/><path d='M280,490 Q282,488.5 283.5,490 Q282.5,492 280.5,491.5 Q279,491 280,490 Z' fill='%237a5530' opacity='0.4'/><path d='M620,540 Q621.5,539 622.5,540 Q622,541 620.5,541 Q620,540.5 620,540 Z' fill='%238a6f3a' opacity='0.6'/><path d='M80,360 Q82,358 84,360 Q83,362 81,361.5 Q79.5,360.5 80,360 Z' fill='%23a07a3e' opacity='0.78'/></svg>");
+  background-size: 700px 700px;
+  animation: dustDriftSlow 50s linear infinite;
+  opacity: 0.9;
+}
+@keyframes dustDriftSlow {
+  from { background-position: 0 0; }
+  to   { background-position: -700px 420px; }
+}
+
+/* =========================================================
+   카메라 흔들림 wrapper
+   ========================================================= */
+.camera {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow-y: auto;       /* 콘텐츠 길어지면 카메라 안에서 세로 스크롤 */
+  overflow-x: hidden;
+}
+.camera.shake { animation: cameraShake 0.4s cubic-bezier(.36,.07,.19,.97); }
+.camera.shake-strong { animation: cameraShake 0.7s cubic-bezier(.36,.07,.19,.97); }
+@keyframes cameraShake {
+  10%, 90% { transform: translate(-2px, 1px); }
+  20%, 80% { transform: translate(4px, -2px); }
+  30%, 50%, 70% { transform: translate(-8px, 2px); }
+  40%, 60% { transform: translate(8px, -2px); }
+}
+
+/* =========================================================
+   화면 효과 오버레이 — 흑백 플래시, 집중선, 연기
+   ========================================================= */
+
+/* 흑백 필터 (식빵 퓽 시 잠깐) */
+.bw-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9995;
+  background: rgba(40, 25, 10, 0.0);
+  backdrop-filter: saturate(1) contrast(1);
+  transition: backdrop-filter .15s ease;
+}
+.bw-flash.active {
+  backdrop-filter: saturate(0) contrast(1.4) brightness(0.85);
+}
+
+/* 집중선 (manga speed lines) */
+.speed-lines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0;
+  background:
+    repeating-conic-gradient(
+      from 0deg at 50% 50%,
+      rgba(40, 25, 10, 0.85) 0deg,
+      rgba(40, 25, 10, 0.85) 1deg,
+      transparent 1deg,
+      transparent 8deg,
+      rgba(40, 25, 10, 0.6) 8deg,
+      rgba(40, 25, 10, 0.6) 9deg,
+      transparent 9deg,
+      transparent 16deg
+    );
+  -webkit-mask-image: radial-gradient(ellipse at center, transparent 22%, black 50%);
+          mask-image: radial-gradient(ellipse at center, transparent 22%, black 50%);
+}
+.speed-lines.fire {
+  animation: speedLinesFlash .35s ease-out;
+}
+@keyframes speedLinesFlash {
+  0%   { opacity: 0; transform: scale(0.95); }
+  20%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.05); }
+}
+
+/* SFX 텍스트 — 만화적 효과음 (한글/영문 둘 다) */
+.sfx-text {
+  position: fixed;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0) rotate(-12deg);
+  font-family: "Hahmlet", "Bevan", "Rye", serif;
+  font-weight: 900;
+  font-size: 110px;
+  color: var(--ketchup);
+  text-shadow:
+    4px 4px 0 var(--ink),
+    8px 8px 0 var(--ketchup-deep);
+  letter-spacing: 0.04em;
+  z-index: 9994;
+  pointer-events: none;
+  opacity: 0;
+  white-space: nowrap;
+}
+.sfx-text.fire {
+  animation: sfxPop 0.8s cubic-bezier(.4, 1.6, .5, 1);
+}
+@keyframes sfxPop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0)   rotate(-15deg); }
+  20%  { opacity: 1; transform: translate(-50%, -50%) scale(1.3) rotate(4deg); }
+  60%  { opacity: 1; transform: translate(-50%, -50%) scale(1)   rotate(-2deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2) rotate(2deg); }
+}
+
+/* 연기 (총구 발사 시) */
+.smoke-overlay {
+  position: fixed;
+  top: 18%;
+  left: 50%;
+  width: 400px;
+  height: 200px;
+  margin-left: -200px;
+  pointer-events: none;
+  z-index: 9989;
+  opacity: 0;
+}
+.smoke-overlay.fire {
+  animation: smokeAnim 1.4s ease-out;
+}
+@keyframes smokeAnim {
+  0%   { opacity: 0; transform: scale(0.4) translateY(0); filter: blur(2px); }
+  20%  { opacity: 0.9; transform: scale(1) translateY(-10px); filter: blur(8px); }
+  100% { opacity: 0; transform: scale(1.6) translateY(-60px); filter: blur(20px); }
+}
+.smoke-overlay::before,
+.smoke-overlay::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 220, 195, 0.95) 0%, rgba(180, 160, 130, 0.6) 50%, transparent 75%);
+}
+.smoke-overlay::before {
+  width: 220px; height: 160px;
+  top: 10px; left: 80px;
+}
+.smoke-overlay::after {
+  width: 180px; height: 140px;
+  top: 30px; left: 20px;
+  background: radial-gradient(circle, rgba(220, 205, 175, 0.8) 0%, rgba(160, 140, 110, 0.4) 50%, transparent 75%);
+}
+
+/* =========================================================
+   화면 전환
+   ========================================================= */
+.screen {
+  position: relative;
+  min-height: 100%;
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+.screen[data-active="true"] { display: flex; }
+
+/* =========================================================
+   TITLE 화면 — 밝은 빈티지 포스터 (3:4)
+   ========================================================= */
+.brand-huge {
+  margin: 0 0 6px;
+  font-family: "Hahmlet", "Bevan", "Rye", serif;
+  font-weight: 800;
+  font-size: clamp(36px, 7vw, 54px);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--ink);
+  text-align: center;
+  text-transform: uppercase;
+}
+.title-tagline {
+  margin: 0 0 32px;
+  font-family: "Bevan", serif;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--ink-soft);
+  text-align: center;
+}
+.title-slider {
+  margin: 0 0 18px;
+}
+
+/* NEXT 버튼 (작고 심플) */
+.next-btn {
+  align-self: center;
+  margin-top: 16px;
+  background: var(--ketchup);
+  color: #fdf8e7;
+  border: 2px solid var(--ketchup-deep);
+  border-radius: 3px;
+  padding: 12px 36px;
+  font-family: "Hahmlet", "Bevan", serif;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow:
+    0 4px 0 var(--ketchup-deep),
+    0 8px 14px rgba(80, 30, 20, 0.2);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.next-btn:hover { background: var(--ketchup-shine); }
+.next-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ketchup-deep), 0 2px 6px rgba(80, 30, 20, 0.3);
+}
+
+/* =========================================================
+   포스터 카드 — 밝은 미색, 3:4 비율, 부드러운 종이결
+   ========================================================= */
+.poster,
+.setup-card,
+.wanted-poster {
+  position: relative;
+  /* 3:4 세로 비율 — 모바일/데스크톱 모두 비례 유지 */
+  width: clamp(300px, 90vw, 540px);
+  min-height: clamp(420px, 80vh, 700px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    /* 가장자리 살짝 어둠 (vignette) */
+    radial-gradient(ellipse at center, transparent 70%, rgba(150, 110, 50, 0.18) 100%),
+    /* 종이 얼룩 (아주 부드럽게) */
+    radial-gradient(ellipse at 18% 22%, rgba(176, 140, 78, 0.10) 0%, transparent 35%),
+    radial-gradient(ellipse at 82% 78%, rgba(150, 110, 50, 0.12) 0%, transparent 38%),
+    /* fine grain (아주 미세) */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='2' stitchTiles='stitch' seed='5'/><feColorMatrix values='0 0 0 0 0.30   0 0 0 0 0.22   0 0 0 0 0.10   0 0 0 0.22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    /* 종이 베이스 — 밝은 크림 */
+    linear-gradient(135deg, #fdf8e7 0%, #f5ecd0 60%, #e8d4a8 100%);
+  background-size: auto, auto, auto, 320px 320px, auto;
+  border: 3px double var(--paper-edge);
+  border-radius: 3px;
+  padding: 56px 44px 44px;  /* 여백 확장: 시각적 밀도 낮춤 */
+  box-shadow:
+    var(--shadow),
+    inset 0 0 60px rgba(176, 144, 88, 0.18);
+}
+
+/* 찢어진 종이 모서리 — 위·아래·옆 모두 불규칙한 큰 zigzag */
+.torn-poster {
+  clip-path: polygon(
+    /* 위 — 5~14px 불규칙 */
+    0 12px, 3% 2px, 7% 14px, 11% 5px, 16% 11px, 21% 1px, 26% 13px, 31% 4px, 36% 9px, 41% 2px, 46% 13px, 51% 6px, 56% 11px, 61% 1px, 66% 14px, 71% 7px, 76% 10px, 81% 3px, 86% 12px, 91% 5px, 95% 13px, 100% 4px,
+    /* 우 — 살짝 들쭉날쭉 */
+    calc(100% - 3px) 12%, 100% 22%, calc(100% - 5px) 35%, 100% 48%, calc(100% - 4px) 60%, 100% 72%, calc(100% - 6px) 85%, 100% 100%,
+    /* 아래 — 4~14px 불규칙 */
+    97% calc(100% - 8px), 92% 100%, 87% calc(100% - 13px), 82% 100%, 77% calc(100% - 6px), 72% 100%, 67% calc(100% - 12px), 62% 100%, 57% calc(100% - 9px), 52% 100%, 47% calc(100% - 14px), 42% 100%, 37% calc(100% - 5px), 32% 100%, 27% calc(100% - 11px), 22% 100%, 17% calc(100% - 8px), 12% 100%, 7% calc(100% - 13px), 2% 100%, 0 calc(100% - 7px),
+    /* 좌 — 살짝 들쭉날쭉 */
+    5px 86%, 0 72%, 4px 60%, 0 48%, 6px 36%, 0 24%, 4px 14%
+  );
+  border: none;
+  box-shadow:
+    var(--shadow),
+    inset 0 0 60px rgba(176, 144, 88, 0.22);
+}
+
+/* 카드 모서리 별 장식 */
+.poster-corner {
+  position: absolute;
+  font-size: 18px;
+  color: var(--ink);
+  opacity: 0.6;
+  font-family: serif;
+}
+.poster-corner.tl { top: 14px; left: 12px; }
+.poster-corner.tr { top: 14px; right: 12px; }
+.poster-corner.bl { bottom: 8px; left: 12px; }
+.poster-corner.br { bottom: 8px; right: 12px; }
+
+.brand {
+  margin: 0 0 10px;
+  font-family: "Hahmlet", "Bevan", "Rye", serif;
+  font-weight: 800;
+  font-size: clamp(26px, 4.5vw, 36px);
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.brand-sub {
+  font-size: 28px;
+  display: block;
+  letter-spacing: 0.08em;
+}
+.subtitle {
+  text-align: center;
+  margin: 0 0 20px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-family: "Bevan", serif;
+  letter-spacing: 0.22em;
+}
+
+/* =========================================================
+   슬라이더 — 큼직, 밝게
+   ========================================================= */
+.slider-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 56px;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.slider-row label {
+  font-family: "Hahmlet", "Bevan", serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+.slider-row input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: linear-gradient(to right, var(--paper-deep) 0%, var(--paper-shadow) 100%);
+  border-radius: 3px;
+  outline: none;
+  border: 1px solid var(--paper-edge);
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ketchup);
+  border: 2px solid var(--ketchup-deep);
+  cursor: grab;
+  box-shadow: 0 2px 4px rgba(80, 40, 20, 0.3);
+}
+.slider-row input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; }
+.slider-row input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ketchup);
+  border: 2px solid var(--ketchup-deep);
+  cursor: grab;
+}
+.count-value {
+  font-family: "Black Ops One", "Bevan", sans-serif;
+  font-size: 32px;
+  text-align: center;
+  color: var(--ketchup-deep);
+  letter-spacing: 0.04em;
+}
+/* 불도장 — 살짝 회전 + 검댕/그을음 효과 */
+.count-value.branded {
+  display: inline-block;
+  color: var(--ink);
+  text-shadow:
+    0 0 8px rgba(168, 93, 40, 0.6),
+    1px 1px 0 var(--ketchup-deep),
+    2px 2px 0 var(--ink);
+  transform: rotate(-3deg);
+  filter: drop-shadow(0 0 6px rgba(110, 56, 18, 0.3));
+}
+
+/* 슬라이더 라벨 옆 영문 부제 */
+.en-sub {
+  display: block;
+  font-family: "Bevan", serif;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  margin-top: 2px;
+  font-weight: normal;
+}
+
+/* 엔트리 포스터 더 크게 (멤버 그리드 공간 확보) */
+.entry-poster {
+  width: min(640px, 94vw);
+}
+
+/* =========================================================
+   멤버 슬롯 그리드 (Stage 2, 12명까지 4열 wrap, 깔끔한 슬롯)
+   ========================================================= */
+/* 멤버 그리드 — 가로로 긴 슬롯, 인원 많으면 행이 늘어남 */
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);  /* 데스크톱: 2열 (슬롯 가로로 길게) */
+  gap: 10px;
+  margin: 18px 0 24px;
+  max-width: 100%;
+}
+
+/* 모바일: 1열 (가로로 더 긴 한 줄) */
+@media (max-width: 520px) {
+  .member-grid { grid-template-columns: 1fr; }
+}
+
+/* 모바일에서는 포스터 패딩 살짝 줄여서 공간 확보 */
+@media (max-width: 480px) {
+  .poster, .setup-card, .wanted-poster {
+    padding: 40px 28px 32px;
+  }
+  .entry-actions {
+    grid-template-columns: 1fr 1.5fr;
+  }
+}
+
+/* 슬롯 — 가로 레이아웃 (No.X | 이름 입력 ____) */
+.member-slot {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(253, 248, 231, 0.85), rgba(243, 224, 179, 0.7));
+  border: 1.5px solid var(--paper-edge);
+  border-radius: 3px;
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.member-slot .slot-no {
+  font-family: "Black Ops One", sans-serif;
+  font-size: 18px;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+  flex: 0 0 auto;
+}
+.member-slot .slot-name {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px dashed var(--ink-faded);
+  text-align: left;
+  font-size: 17px;
+  color: var(--ink);
+  outline: none;
+  font-family: "Hahmlet", "Jua", serif;
+  font-weight: 700;
+  padding: 4px 0;
+  min-width: 0;
+}
+.member-slot .slot-name:focus {
+  border-bottom-color: var(--ketchup);
+}
+.member-slot .slot-name::placeholder {
+  color: rgba(58, 40, 24, 0.35);
+  font-weight: 400;
+}
+
+/* =========================================================
+   격발 방식 토글 (Stage 2)
+   ========================================================= */
+.fire-mode {
+  margin: 8px 0 22px;
+  text-align: center;
+}
+.fire-mode-label {
+  font-family: "Bevan", serif;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+.fire-mode-toggle {
+  display: inline-flex;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(40, 25, 10, 0.06);
+}
+.fire-mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 7px 16px;
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+  border-right: 1.5px solid var(--ink);
+}
+.fire-mode-btn:last-child { border-right: none; }
+.fire-mode-btn .fmt-ko {
+  font-family: "Hahmlet", serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.fire-mode-btn .fmt-en {
+  font-family: "Bevan", serif;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  color: var(--ink-soft);
+}
+.fire-mode-btn:hover {
+  background: rgba(40, 25, 10, 0.12);
+}
+.fire-mode-btn.active {
+  background: var(--ketchup);
+  color: #fdf8e7;
+}
+.fire-mode-btn.active .fmt-en {
+  color: rgba(253, 248, 231, 0.85);
+}
+
+/* 화면 전환 — 부드러운 페이드 (선택적) */
+.screen { transition: opacity .25s ease; }
+
+/* =========================================================
+   엔트리 액션 (이전 + 굽기)
+   ========================================================= */
+.entry-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px;
+}
+.ghost-btn {
+  background: transparent;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  font-family: "Hahmlet", serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  padding: 14px 24px;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.ghost-btn:hover {
+  background: rgba(40, 25, 10, 0.08);
+}
+
+/* 식빵 (미리보기 — 작은 사이즈) */
+.bread-mini {
+  position: relative;
+  width: 56px;
+  height: 78px;
+  border-radius: 26px 26px 4px 4px;
+  background: linear-gradient(
+    to bottom,
+    #dba560 0%,
+    #f0d28a 30%,
+    #f0d28a 70%,
+    #8a5a30 100%);
+  border: 2px solid #6e3812;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset -3px -4px 8px rgba(110, 56, 18, 0.5),
+    inset 2px 2px 4px rgba(255, 220, 160, 0.5),
+    0 4px 6px rgba(40,25,10,0.3);
+  margin-bottom: -8px;
+  z-index: 2;
+}
+.bread-no {
+  font-family: "Black Ops One", sans-serif;
+  font-size: 20px;
+  color: var(--ink);
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 1px 0 rgba(255,210,138,0.4),
+    0 0 6px rgba(110,56,18,0.5);
+}
+.bread-name-input {
+  width: 50px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--ink);
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink);
+  outline: none;
+  font-family: inherit;
+  font-weight: 700;
+  padding: 0 0 1px;
+}
+.bread-name-input::placeholder { color: rgba(42, 26, 10, 0.4); }
+
+/* =========================================================
+   옵션 (한방 격발) — 큼직하게 강조
+   ========================================================= */
+.quick-mode {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 22px;
+  font-family: "Bevan", serif;
+  font-size: 13px;
+  color: var(--ink);
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  user-select: none;
+}
+.quick-mode input { accent-color: var(--ketchup); }
+
+/* 강조된 큰 버전 */
+.quick-mode.big {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 10px 0 24px;
+  padding: 14px 18px;
+  background: rgba(40, 25, 10, 0.06);
+  border: 2px dashed var(--kraft-deep);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.quick-mode.big input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--ketchup);
+  cursor: pointer;
+}
+.quick-mode.big .quick-text {
+  font-family: "Rye", serif;
+  font-size: 22px;
+  color: var(--ketchup-deep);
+  letter-spacing: 0.08em;
+  flex: 0 0 auto;
+}
+.quick-mode.big .quick-sub {
+  font-family: "Hahmlet", serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink-soft);
+  letter-spacing: 0.05em;
+}
+
+/* =========================================================
+   버튼 (굽기 / 다시) — 깔끔하게
+   ========================================================= */
+.bake-btn {
+  display: block;
+  width: 100%;
+  background: linear-gradient(180deg, var(--ketchup-shine) 0%, var(--ketchup) 60%, var(--ketchup-deep) 100%);
+  color: #fdf8e7;
+  border: 2px solid var(--ketchup-deep);
+  border-radius: 4px;
+  padding: 14px 24px;
+  font-family: "Hahmlet", "Bevan", serif;
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: 0.06em;
+  box-shadow:
+    0 4px 0 var(--ketchup-deep),
+    0 8px 18px rgba(80, 30, 20, 0.25),
+    inset 0 2px 0 rgba(255,255,255,0.25);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.bake-btn:hover  { background: linear-gradient(180deg, var(--ketchup-shine) 0%, var(--ketchup-shine) 100%); }
+.bake-btn:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 var(--ketchup-deep),
+    0 2px 8px rgba(80, 30, 20, 0.3),
+    inset 0 2px 0 rgba(255,255,255,0.25);
+}
+
+/* =========================================================
+   READY / DRAW 큰 텍스트
+   ========================================================= */
+.big-cue {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-family: "Rye", serif;
+  letter-spacing: 0.05em;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+}
+.big-cue.ready {
+  font-size: 110px;
+  color: var(--ink);
+  text-shadow: 4px 4px 0 var(--ketchup), 8px 8px 0 var(--paper-shadow);
+}
+.big-cue.draw {
+  font-size: 220px;
+  color: var(--ketchup);
+  text-shadow: 6px 6px 0 var(--ink), 12px 12px 0 var(--ketchup-deep);
+}
+.big-cue.show {
+  animation: cuePop 0.8s cubic-bezier(.4, 1.6, .5, 1) forwards;
+}
+@keyframes cuePop {
+  0%   { transform: translate(-50%, -50%) scale(0)   rotate(-12deg); opacity: 0; }
+  25%  { transform: translate(-50%, -50%) scale(1.2) rotate(3deg);   opacity: 1; }
+  60%  { transform: translate(-50%, -50%) scale(1)   rotate(0deg);   opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.1) rotate(0deg);   opacity: 0; }
+}
+/* DRAW! 는 가로지르는 효과 */
+.big-cue.draw.show {
+  animation: drawSlash 0.9s cubic-bezier(.2, .8, .3, 1) forwards;
+}
+@keyframes drawSlash {
+  0%   { transform: translate(-150%, -50%) scale(0.5) rotate(-15deg); opacity: 0; }
+  25%  { transform: translate(-50%, -50%)  scale(1.3) rotate(0deg);   opacity: 1; }
+  60%  { transform: translate(-50%, -50%)  scale(1)   rotate(0deg);   opacity: 1; }
+  100% { transform: translate(150%, -50%)  scale(0.5) rotate(15deg);  opacity: 0; }
+}
+
+/* =========================================================
+   READY 줌 스테이지
+   ========================================================= */
+.zoom-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+.toaster-zoom {
+  transform: scale(1) rotateX(8deg);
+  transform-origin: 75% 65%;  /* 측면 레버 */
+  transition: transform 1s cubic-bezier(.5, 0, .4, 1);
+}
+.toaster-zoom.zoom-in {
+  transform: scale(3) rotateX(8deg) translateX(-12%);
+}
+
+/* =========================================================
+   ACTION 화면 — POV 결투 (큰 토스터 + 카메라 횡이동 + 식빵 위로 팝업)
+   ========================================================= */
+#screen-action {
+  position: fixed;
+  inset: 0;
+  min-height: 0;
+  perspective: 1400px;
+  perspective-origin: 50% 80%;
+  overflow: hidden;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
+
+.action-camera {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* 무대: rotateX(POV)+translateX(camera pan) */
+/* bottom -62vh: 토스터를 살짝 더 아래로, 슬롯이 화면 하단부에 자연스럽게 걸침 */
+.action-scene {
+  position: absolute;
+  bottom: -62vh;
+  left: 0;
+  width: max-content;
+  transform: rotateX(22deg) translateX(0);
+  transform-style: preserve-3d;
+  transform-origin: bottom center;
+  transition: transform .85s cubic-bezier(.4, 0, .2, 1);
+  will-change: transform;
+}
+
+/* Quick Draw 모드 — 트랜지션 짧게 (rapid fire 느낌) */
+.action-scene.quick-draw {
+  transition: transform .18s cubic-bezier(.5, 0, .5, 1);
+}
+.action-scene.quick-draw .bread-popup {
+  transition: transform .2s cubic-bezier(.3, 1.4, .35, 1), opacity .15s ease;
+}
+.action-scene.quick-draw .bread-popup.fall {
+  transition: transform .2s cubic-bezier(.55, 0, .9, .55), opacity .15s ease;
+}
+
+/* 토스터 BACK 레이어 — 슬롯 안쪽 (식빵 뒤, z-index 1) */
+.big-toaster-back {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+.big-toaster-back svg { display: block; }
+
+/* 식빵 popup 묶음 — back과 front 사이 (z-index 2) */
+.bread-popups {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 토스터 FRONT 레이어 — 본체+디테일 (식빵 앞, z-index 3) */
+/* 슬롯 위치는 evenodd hole로 뚫려있어 식빵이 슬롯에서 보임 */
+.big-toaster-front {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  filter: drop-shadow(0 18px 24px rgba(40, 25, 10, 0.4));
+  pointer-events: none;
+}
+.big-toaster-front svg { display: block; }
+
+/* 개별 식빵 (각 슬롯 위치) */
+.bread-popup {
+  position: absolute;
+  bottom: 290px;
+  width: 290px;
+  margin-left: -145px;
+  height: 380px;
+  /* M 아치 모양 클리핑 — 바닥 꼭짓점 둥글게 */
+  clip-path: polygon(
+    0% 35%, 1% 22%, 4% 13%, 8% 8%, 15% 5.4%,
+    23% 3%, 32% 2%, 42% 3%, 50% 3.5%,
+    58% 3%, 68% 2%, 77% 3%, 85% 5.4%,
+    92% 8%, 96% 13%, 99% 22%, 100% 35%,
+    100% 95%, 99% 98%, 96% 100%,
+    4% 100%, 1% 98%, 0% 95%
+  );
+  display: block;
+  /* 초기엔 토스터 본체에 박혀있음 (z-index가 토스터보다 뒤라 가려짐) */
+  transform: translateY(60px);
+  opacity: 1;
+  transition:
+    transform .65s cubic-bezier(.2, 1.45, .35, 1),
+    opacity .3s ease;
+  z-index: 3;
+}
+
+/* 떠 있는 느낌의 부드러운 그림자 — clip-path 모양을 따라감 */
+.bread-popup-wrap,
+.bread-popup {
+  filter: drop-shadow(0 18px 16px rgba(40, 25, 10, 0.4));
+}
+
+/* SVG 식빵 (모양 + crust + 구운 자국 + 노이즈) */
+.bread-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  /* 살짝 대비만, 너무 어둡지 않게 */
+  filter: contrast(1.04);
+}
+
+/* 텍스트 wrapper — 빵 본체(크라운 아래) 중심에 정렬 */
+.bread-text {
+  position: absolute;
+  top: 15%;          /* 크라운 영역만큼 offset → 본체 한가운데 정렬 */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+}
+/* 팝업: 화면 위쪽까지 푱! 슬롯에서 솟아오름 */
+.bread-popup.popped {
+  transform: translateY(-740px);
+  opacity: 1;
+}
+/* 떨어짐: ease-in (가속도 강) */
+.bread-popup.fall {
+  transition: transform .7s cubic-bezier(.55, 0, .9, .55), opacity .3s ease;
+  transform: translateY(60px);
+  opacity: 0;
+}
+
+.bread-popup .bread-no {
+  font-family: "Black Ops One", sans-serif;
+  font-size: 42px;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+  color: var(--ink);
+  text-shadow: 0 0 14px rgba(110,56,18,0.5);
+  position: relative;
+  z-index: 1;            /* 케찹(z 5) 아래 — multiply로 어둡게 비침 */
+}
+.bread-popup .bread-name {
+  font-family: "Hahmlet", serif;
+  font-weight: 800;
+  font-size: 40px;
+  color: var(--ink);
+  text-align: center;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+/* 케찹 스플래시 — 식빵 정중앙 */
+.bread-popup .splash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.15) rotate(-8deg);
+  transition: opacity .12s ease;
+  mix-blend-mode: multiply;
+  z-index: 5;
+}
+/* 팡! — 0.2s 짧고 강한 polynomial overshoot */
+.bread-popup.hit .splash {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  transition:
+    opacity .12s ease,
+    transform .22s cubic-bezier(.3, 1.9, .4, 1);
+}
+
+/* 명중 식빵은 떨어질 때 함께 천천히 페이드 */
+.bread-popup.hit.fall {
+  transition: transform 1.1s cubic-bezier(.3, 0, .5, .8), opacity .8s ease;
+  opacity: 0;
+  transform: translateY(120px);
+}
+
+/* 케찹총 — FPS 스타일 (총구만 보임, 더 큼) */
+.ketchup-fixed {
+  position: fixed;
+  left: 50%;
+  bottom: -240px;       /* 본체 대부분 화면 밖 */
+  transform: translateX(-50%);
+  width: 290px;
+  height: 360px;
+  z-index: 10;
+  filter: drop-shadow(0 -10px 20px rgba(40,25,10,0.6));
+  transition: transform .12s ease;
+}
+.ketchup-fixed.shoot {
+  animation: gunShoot .35s cubic-bezier(.5, 1.6, .5, 1);
+}
+@keyframes gunShoot {
+  0%   { transform: translateX(-50%) translateY(0) scale(1); }
+  25%  { transform: translateX(-50%) translateY(10px) scale(0.95, 1.08); }
+  100% { transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+/* 모바일 — 비례 줄여도 토스터·식빵 스케일 유지 */
+@media (max-width: 520px) {
+  .bread-popup {
+    width: 220px;
+    margin-left: -110px;
+    height: 290px;
+    bottom: 230px;
+    border-radius: 60px 60px 14px 14px;
+  }
+  .bread-popup .bread-no { font-size: 32px; }
+  .bread-popup .bread-name { font-size: 30px; max-width: 180px; }
+  .bread-popup.popped { transform: translateY(-610px); }
+  .ketchup-fixed { width: 220px; height: 280px; bottom: -180px; }
+  .action-scene { bottom: -62vh; }
+}
+
+/* =========================================================
+   액션 화면 발사 버튼 / 카운터
+   ========================================================= */
+.fire-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  background:
+    linear-gradient(180deg, var(--ketchup-shine) 0%, var(--ketchup) 50%, var(--ketchup-deep) 100%);
+  color: #fff8e8;
+  border: 3px solid var(--ink);
+  border-radius: 4px;
+  padding: 14px 32px;
+  font-family: "Rye", serif;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  z-index: 20;
+  text-shadow: 2px 2px 0 var(--ketchup-deep);
+  box-shadow:
+    0 5px 0 var(--ink),
+    0 10px 18px rgba(40,25,10,0.5),
+    inset 0 2px 0 rgba(255,255,255,0.25);
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.fire-btn:hover  { background: linear-gradient(180deg, var(--ketchup-shine), var(--ketchup-shine)); }
+.fire-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--ink), 0 4px 8px rgba(40,25,10,0.5);
+}
+.fire-btn:disabled {
+  background: linear-gradient(180deg, var(--paper-deep), var(--kraft));
+  color: var(--ink-faded);
+  border-color: var(--kraft-deep);
+  box-shadow: 0 5px 0 var(--kraft-deep);
+  cursor: not-allowed;
+  text-shadow: none;
+}
+
+.action-counter {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  font-family: "Black Ops One", sans-serif;
+  font-size: 28px;
+  color: var(--ink);
+  letter-spacing: 0.12em;
+  background: rgba(243, 224, 179, 0.92);
+  padding: 6px 16px;
+  border: 2px solid var(--kraft-deep);
+  border-radius: 2px;
+  z-index: 20;
+}
+
+/* =========================================================
+   WANTED 포스터 (RESULT) — 빈티지 현상수배 (이미지 38 참고)
+   타이포 극단 대비 + 빽빽한 밀도 + 빈티지 질감
+   ========================================================= */
+.wanted-poster {
+  text-align: center;
+  padding: 22px 28px 18px;        /* 밀도 극대화 */
+}
+
+/* WANTED — 단순한 슬랩세리프 (Bevan), 폰트 사이즈 캡 */
+.wanted-title {
+  margin: 26px 0 2px;
+  font-family: "Bevan", serif;
+  font-size: clamp(48px, 12vw, 72px);
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+  text-align: center;
+  text-indent: 0.02em;
+}
+
+/* DEAD OR ALIVE — 작은 보조 (강조 안 됨) */
+.wanted-tagline {
+  margin: 8px 0 12px;
+  font-family: "Bevan", serif;
+  font-size: 14px;
+  color: var(--ink);
+  letter-spacing: 0.2em;
+  text-align: center;
+  line-height: 1;
+}
+
+/* 별 디바이더 */
+.poster-star {
+  font-size: 18px;
+  color: var(--ink);
+  text-align: center;
+  margin: 14px 0 10px;
+  letter-spacing: 0;
+}
+
+/* 당첨자 빈티지 액자 */
+.winners-frame {
+  position: relative;
+  margin: 14px 0;
+  padding: 8px;
+  border: 3px double var(--ink);
+}
+
+/* ARMED AND COVERED IN KETCHUP — 이중선 사이 아주 작은 텍스트 */
+.poster-line {
+  border: none;
+  border-top: 2px solid var(--ink);
+  margin: 8px 0;
+  height: 0;
+}
+.wanted-subtagline {
+  margin: 6px 0;
+  font-family: "Bevan", serif;
+  font-size: 9px;
+  color: var(--ink);
+  letter-spacing: 0.18em;
+  text-align: center;
+  line-height: 1;
+}
+
+/* REWARD 블록 — 큰 금액 (강조) + 작은 라벨 */
+.reward-block {
+  margin: 14px 0 10px;
+  text-align: center;
+  line-height: 1;
+}
+.reward-amount {
+  font-family: "Bevan", serif;
+  font-size: clamp(26px, 5.5vw, 36px);
+  color: var(--ink);
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-indent: 0.04em;
+  line-height: 0.95;
+  margin: 0;
+}
+.reward-label {
+  font-family: "Bevan", serif;
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.32em;
+  margin-top: 6px;
+}
+
+/* 하단 아주 작은 보조 문구 */
+.poster-foot {
+  margin: 14px 0 10px;
+  font-family: "Bevan", serif;
+  font-size: 8px;
+  color: var(--ink-soft);
+  letter-spacing: 0.22em;
+  text-align: center;
+  border-top: 1px dashed var(--ink-soft);
+  border-bottom: 1px dashed var(--ink-soft);
+  padding: 5px 0;
+}
+
+/* 한 판 더 버튼 — 도장 스타일 (살짝 회전, 빨강 더블 보더) */
+/* 결과 화면: 포스터 + 버튼 세로 배치 */
+#screen-result {
+  flex-direction: column;
+  gap: 18px;
+}
+
+.restart-stamp {
+  display: inline-block;
+  margin: 4px auto;
+  padding: 12px 40px;
+  background: rgba(216, 54, 42, 0.04);
+  color: var(--ketchup);
+  border: 4px double var(--ketchup);
+  font-family: "Bevan", "Hahmlet", serif;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transform: rotate(-3deg);
+  box-shadow:
+    3px 3px 0 rgba(216, 54, 42, 0.18),
+    inset 0 0 0 2px rgba(216, 54, 42, 0.1);
+  transition: transform .15s ease, background .15s ease;
+}
+.restart-stamp:hover {
+  transform: rotate(0deg) scale(1.04);
+  background: rgba(216, 54, 42, 0.12);
+}
+.restart-stamp:active {
+  transform: rotate(-1deg) scale(0.98);
+}
+.wanted-sub {
+  margin: 0 0 18px;
+  font-family: "Bevan", serif;
+  font-size: 12px;
+  color: var(--ink-soft);
+  letter-spacing: 0.22em;
+}
+.winner-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  justify-items: center;
+  border: none;
+}
+.winner-list li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+  max-width: 200px;
+}
+
+/* 케찹 식빵 mugshot — 흰 배경 없이 종이 위에 직접 (현상수배 일러스트처럼) */
+.mugshot {
+  width: 100%;
+  aspect-ratio: 100 / 130;
+  flex: 0 0 auto;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(2px 3px 2px rgba(40, 25, 10, 0.25));
+}
+.mugshot svg { display: block; width: 100%; height: 100%; }
+
+/* 이름 라벨 — 검정 배경 단순 카드 */
+.winner-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: var(--ink);
+  color: var(--paper-light);
+  padding: 6px 14px;
+  width: 100%;
+  text-align: center;
+}
+
+.winner-list .winner-no {
+  font-family: "Bevan", "Black Ops One", serif;
+  font-size: 14px;
+  color: var(--ketchup-shine);
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+.winner-list .winner-name {
+  font-family: "Hahmlet", serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  color: var(--paper-light);
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 당첨자 없음 케이스 */
+.winner-list .no-winner {
+  grid-column: 1 / -1;
+  background: transparent;
+  padding: 12px;
+}
+.winner-list .no-winner .winner-name {
+  color: var(--ink-soft);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+}
+.wanted-bottom {
+  margin: 18px 0;
+  font-family: "Bevan", serif;
+  font-size: 14px;
+  color: var(--ink-soft);
+  letter-spacing: 0.18em;
+  text-align: center;
+}

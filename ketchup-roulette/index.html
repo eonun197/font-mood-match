@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KETCHUP SHOWDOWN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Bevan&family=Black+Ops+One&family=Hahmlet:wght@500;600;700;800&family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- 전체 화면 효과 오버레이 (어떤 화면에서든 위에 깔림) -->
+<div class="bw-flash" id="bwFlash" aria-hidden="true"></div>
+<div class="speed-lines" id="speedLines" aria-hidden="true"></div>
+<div class="smoke-overlay" id="smokeOverlay" aria-hidden="true"></div>
+<div class="dust-overlay" aria-hidden="true"></div>
+<div class="sfx-text" id="sfxText" aria-hidden="true"></div>
+
+<!-- 카메라 흔들림 wrapper -->
+<div class="camera" id="camera">
+
+<!-- ============== STAGE 1: TITLE / 설정 (식빵 안 보임) ============== -->
+<section class="screen" id="screen-title" data-active="true">
+  <div class="poster torn-poster">
+    <div class="poster-corner tl">★</div>
+    <div class="poster-corner tr">★</div>
+    <div class="poster-corner bl">★</div>
+    <div class="poster-corner br">★</div>
+
+    <h1 class="brand-huge">케찹 룰렛</h1>
+    <p class="title-tagline">— 정오의 결투 —</p>
+
+    <div class="slider-row title-slider">
+      <label>참가 인원<span class="en-sub">POSSE SIZE</span></label>
+      <input type="range" id="countSlider" min="1" max="20" value="3" />
+      <span class="count-value branded" id="countValue">3</span>
+    </div>
+
+    <div class="slider-row title-slider">
+      <label>케찹 당첨자<span class="en-sub">WANTED</span></label>
+      <input type="range" id="winnerSlider" min="1" max="20" value="1" />
+      <span class="count-value branded" id="winnerValue">1</span>
+    </div>
+
+    <button class="next-btn" id="enterBtn">다음 (NEXT)</button>
+  </div>
+</section>
+
+<!-- ============== STAGE 2: 멤버 엔트리 ============== -->
+<section class="screen" id="screen-entry">
+  <div class="poster torn-poster entry-poster">
+    <div class="poster-corner tl">★</div>
+    <div class="poster-corner tr">★</div>
+    <div class="poster-corner bl">★</div>
+    <div class="poster-corner br">★</div>
+
+    <h2 class="brand">멤버 등록</h2>
+    <p class="subtitle">— MEMBER ENTRY —</p>
+
+    <!-- 멤버 슬롯 그리드 (식빵 형태 X, 깔끔한 슬롯) -->
+    <div class="member-grid" id="memberGrid"></div>
+
+    <!-- 격발 방식 토글 -->
+    <div class="fire-mode">
+      <div class="fire-mode-label">격발 방식</div>
+      <div class="fire-mode-toggle" role="tablist">
+        <button class="fire-mode-btn active" data-mode="single" role="tab" aria-selected="true">개별 격발</button>
+        <button class="fire-mode-btn" data-mode="bulk" role="tab" aria-selected="false">일괄 격발</button>
+      </div>
+    </div>
+
+    <div class="entry-actions">
+      <button class="ghost-btn" id="backToTitleBtn">이전</button>
+      <button class="bake-btn" id="bakeBtn">굽기 (SHOWDOWN)</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SCREEN 2: READY (레버 줌인) ============== -->
+<section class="screen" id="screen-ready">
+  <div class="big-cue ready" id="readyCue">READY...</div>
+  <div class="zoom-stage" id="readyStage">
+    <div class="toaster-zoom" id="toasterZoom"></div>
+  </div>
+</section>
+
+<!-- ============== SCREEN 3: GO/DRAW ============== -->
+<section class="screen" id="screen-go">
+  <div class="big-cue draw" id="goCue">DRAW!</div>
+</section>
+
+<!-- ============== SCREEN 4: ACTION (POV 결투) ============== -->
+<section class="screen" id="screen-action">
+  <!-- 카메라 wrapper: perspective + 횡이동 -->
+  <div class="action-camera">
+    <div class="action-scene" id="actionScene">
+      <!-- 토스터 BACK 레이어 (슬롯 어두운 안쪽만, z-index 1) -->
+      <div class="big-toaster-back" id="bigToasterBack"></div>
+      <!-- 식빵 popup들 (z-index 2) -->
+      <div class="bread-popups" id="breadPopups"></div>
+      <!-- 토스터 FRONT 레이어 (본체+슬롯 hole, z-index 3) -->
+      <div class="big-toaster-front" id="bigToasterFront"></div>
+    </div>
+  </div>
+
+  <!-- 케찹총 (화면 하단 중앙 고정, 위로 사격) -->
+  <div class="ketchup-fixed" id="ketchupFixed"></div>
+
+  <!-- 발사 버튼 (우하단), 카운터 (좌하단) -->
+  <button class="fire-btn" id="fireBtn">FIRE</button>
+  <div class="action-counter" id="actionCounter">0 / 3</div>
+</section>
+
+<!-- ============== SCREEN 5: WANTED 포스터 ============== -->
+<section class="screen" id="screen-result">
+  <div class="wanted-poster torn-poster">
+    <div class="poster-corner tl">★</div>
+    <div class="poster-corner tr">★</div>
+    <div class="poster-corner bl">★</div>
+    <div class="poster-corner br">★</div>
+
+    <h2 class="wanted-title">WANTED</h2>
+    <p class="wanted-tagline">DEAD OR ALIVE</p>
+    <div class="poster-star">★</div>
+
+    <!-- 당첨자 빈티지 액자 -->
+    <div class="winners-frame">
+      <ul class="winner-list" id="winnerList"></ul>
+    </div>
+
+    <hr class="poster-line" />
+    <p class="wanted-subtagline">ARMED AND COVERED IN KETCHUP</p>
+    <hr class="poster-line" />
+
+    <!-- 거대 REWARD -->
+    <div class="reward-block">
+      <div class="reward-amount">$1 BREAD</div>
+      <div class="reward-label">CASH REWARD</div>
+    </div>
+
+    <p class="poster-foot">FOR THE CRIME OF BEING DELICIOUS</p>
+  </div>
+
+  <button class="restart-stamp" id="restartBtn">한 판 더</button>
+</section>
+
+</div><!-- /.camera -->
+
+<script src="app.js"></script>
+</body>
+</html>
