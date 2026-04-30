@@ -967,43 +967,43 @@ body::after {
   100% { transform: translateY(146px); }   /* LOCK */
 }
 
-/* 먼지 구름 (서부극 흙먼지) — 레버 철컥과 동시 폭발 */
+/* 먼지 구름 (서부극 흙먼지) — 레버 철컥과 동시 폭발, 토스터 위로 보이게 */
 .action-lines {
   position: absolute;
-  left: 4%;
-  top: 8%;
-  width: 64%;
-  height: 64%;
+  left: 6%;
+  top: 4%;
+  width: 56%;
+  height: 56%;
   background:
-    radial-gradient(ellipse at 28% 30%, rgba(232, 210, 175, 0.55), transparent 32%),
-    radial-gradient(ellipse at 72% 26%, rgba(208, 180, 140, 0.50), transparent 36%),
-    radial-gradient(ellipse at 32% 74%, rgba(190, 158, 115, 0.50), transparent 34%),
-    radial-gradient(ellipse at 75% 70%, rgba(178, 145, 100, 0.45), transparent 38%),
+    radial-gradient(ellipse at 28% 30%, rgba(180, 140, 90, 0.85), transparent 35%),
+    radial-gradient(ellipse at 72% 26%, rgba(160, 120, 75, 0.80), transparent 38%),
+    radial-gradient(ellipse at 32% 72%, rgba(140, 100, 60, 0.75), transparent 36%),
+    radial-gradient(ellipse at 75% 70%, rgba(150, 110, 70, 0.78), transparent 38%),
     radial-gradient(ellipse at 50% 50%,
-      rgba(170, 138, 95, 0.6),
-      rgba(150, 115, 75, 0.35) 35%,
-      rgba(120, 88, 55, 0.12) 60%,
+      rgba(160, 120, 80, 0.85),
+      rgba(130, 90, 55, 0.55) 35%,
+      rgba(100, 70, 40, 0.25) 60%,
       transparent 85%);
   border-radius: 50%;
   opacity: 0;
   transform: scale(0.22);
   transform-origin: center;
-  z-index: 4;
+  z-index: 8;            /* 토스터(lever-closeup z:6)보다 앞 — 가려지지 않게 */
   pointer-events: none;
-  filter: blur(6px);
+  filter: blur(3px);     /* 6px → 3px, 너무 흐려지지 않게 */
   mix-blend-mode: multiply;
 }
 /* 안쪽 코어 — 더 짙은 먼지 덩어리로 깊이감 */
 .action-lines::before {
   content: "";
   position: absolute;
-  inset: 18%;
+  inset: 22%;
   border-radius: 50%;
   background: radial-gradient(circle,
-    rgba(110, 78, 45, 0.55),
-    rgba(90, 62, 35, 0.25) 45%,
+    rgba(80, 50, 25, 0.75),
+    rgba(60, 38, 18, 0.45) 45%,
     transparent 75%);
-  filter: blur(5px);
+  filter: blur(3px);
   mix-blend-mode: multiply;
 }
 .panel-tl.click .action-lines {
