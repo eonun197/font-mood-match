@@ -1227,6 +1227,8 @@ body::after {
     4% 100%, 1% 98%, 0% 95%
   );
   display: block;
+  /* mix-blend-mode 가 식빵 표면 안쪽에서만 작동하도록 격리 */
+  isolation: isolate;
   /* 초기엔 토스터 본체에 박혀있음 (z-index가 토스터보다 뒤라 가려짐) */
   transform: translateY(60px);
   opacity: 1;
@@ -1291,16 +1293,19 @@ body::after {
   font-size: 56px;
   letter-spacing: 0.06em;
   margin-bottom: 14px;
-  color: var(--ink);
-  text-shadow: 0 0 16px rgba(110,56,18,0.5);
+  /* multiply 블렌드를 위해 더 진한 ink + 미세 그레인 */
+  color: #2a1a0a;
   position: relative;
   z-index: 1;
+  mix-blend-mode: multiply;
+  opacity: 0.92;
+  text-shadow: 0 0.5px 0 rgba(58, 36, 18, 0.35);
 }
 .bread-popup .bread-name {
   font-family: "Hahmlet", serif;
   font-weight: 800;
   font-size: 52px;
-  color: var(--ink);
+  color: #2a1a0a;
   text-align: center;
   max-width: 260px;
   white-space: nowrap;
@@ -1309,6 +1314,9 @@ body::after {
   letter-spacing: 0.02em;
   position: relative;
   z-index: 1;
+  mix-blend-mode: multiply;
+  opacity: 0.92;
+  text-shadow: 0 0.5px 0 rgba(58, 36, 18, 0.35);
 }
 
 /* 케찹 스플래시 — 식빵 정중앙 */
