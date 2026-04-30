@@ -369,27 +369,27 @@ function ketchupGunSVG() {
     <svg viewBox="0 0 110 220" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
       <defs>
         <linearGradient id="bottleBody" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="#7a0e0e"/>
-          <stop offset="22%"  stop-color="#c4221d"/>
-          <stop offset="50%"  stop-color="#e6342a"/>
-          <stop offset="78%"  stop-color="#c4221d"/>
+          <stop offset="0%"   stop-color="#8e1414"/>
+          <stop offset="22%"  stop-color="#c8221c"/>
+          <stop offset="50%"  stop-color="#ec3a30"/>
+          <stop offset="78%"  stop-color="#c8221c"/>
           <stop offset="100%" stop-color="#7a0e0e"/>
         </linearGradient>
-        <radialGradient id="bottleShine" cx="32%" cy="38%" r="55%">
-          <stop offset="0%"  stop-color="rgba(255,255,255,0.45)"/>
-          <stop offset="55%" stop-color="rgba(255,255,255,0.05)"/>
+        <radialGradient id="bottleShine" cx="30%" cy="32%" r="60%">
+          <stop offset="0%"  stop-color="rgba(255,255,255,0.5)"/>
+          <stop offset="55%" stop-color="rgba(255,255,255,0.06)"/>
           <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
         </radialGradient>
         <linearGradient id="capGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stop-color="#ffffff"/>
           <stop offset="55%"  stop-color="#f4eedf"/>
-          <stop offset="100%" stop-color="#bdb59c"/>
+          <stop offset="100%" stop-color="#cdc4a8"/>
         </linearGradient>
-        <linearGradient id="capSide" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"  stop-color="#cdc6ad"/>
-          <stop offset="40%" stop-color="#ffffff"/>
-          <stop offset="100%" stop-color="#a8a087"/>
-        </linearGradient>
+        <radialGradient id="capShine" cx="38%" cy="35%" r="55%">
+          <stop offset="0%"  stop-color="rgba(255,255,255,0.95)"/>
+          <stop offset="55%" stop-color="rgba(255,255,255,0.1)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </radialGradient>
         <linearGradient id="labelGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"  stop-color="#fffaee"/>
           <stop offset="100%" stop-color="#f0e6c8"/>
@@ -401,43 +401,49 @@ function ketchupGunSVG() {
         </radialGradient>
       </defs>
 
-      <!-- =============== 본체 (눈물방울 / Teardrop) =============== -->
-      <!-- 본체 fill (위가 좁고 아래가 빵빵) -->
+      <!-- =============== 본체 (호리병/원뿔, 둥근 어깨) =============== -->
+      <!-- 본체 fill — 위 좁고 어깨 둥글게, 아래 빵빵 -->
       <path id="bottleShape" d="
-        M 42 28
-        C 30 38, 14 78, 10 130
-        C 8 178, 24 210, 55 210
-        C 86 210, 102 178, 100 130
-        C 96 78, 80 38, 68 28
+        M 41 28
+        C 32 36, 22 52, 16 76
+        C 10 102, 8 138, 10 168
+        C 12 192, 24 210, 40 214
+        C 50 216, 60 216, 70 214
+        C 86 210, 98 192, 100 168
+        C 102 138, 100 102, 94 76
+        C 88 52, 78 36, 69 28
         Z"
-        fill="url(#bottleBody)" stroke="#3a0a08" stroke-width="2.4" stroke-linejoin="round"/>
+        fill="url(#bottleBody)" stroke="#3a0a08" stroke-width="1.2" stroke-linejoin="round"/>
 
       <!-- 본체 광택 (radial highlight, 좌상단) -->
       <path d="
-        M 42 28
-        C 30 38, 14 78, 10 130
-        C 8 178, 24 210, 55 210
-        C 86 210, 102 178, 100 130
-        C 96 78, 80 38, 68 28
+        M 41 28
+        C 32 36, 22 52, 16 76
+        C 10 102, 8 138, 10 168
+        C 12 192, 24 210, 40 214
+        C 50 216, 60 216, 70 214
+        C 86 210, 98 192, 100 168
+        C 102 138, 100 102, 94 76
+        C 88 52, 78 36, 69 28
         Z" fill="url(#bottleShine)"/>
 
-      <!-- 좌상단 강렬한 흰 하이라이트 스트립 (반짝) -->
-      <path d="M 26 50 Q 18 90, 18 150 Q 19 178, 26 196"
-            fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="6" stroke-linecap="round"/>
-      <!-- 보조 하이라이트 (옅음) -->
-      <path d="M 36 60 Q 30 100, 30 150"
-            fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="2" stroke-linecap="round"/>
-      <!-- 작은 sparkle 점 -->
-      <ellipse cx="22" cy="78" rx="2.4" ry="5" fill="rgba(255,255,255,0.9)"/>
-      <ellipse cx="32" cy="62" rx="1.4" ry="3" fill="rgba(255,255,255,0.85)"/>
+      <!-- 좌상단 부드러운 흰 하이라이트 (몸체 곡선 따라) -->
+      <path d="M 26 50 C 20 80, 16 120, 18 160 C 19 184, 22 200, 28 208"
+            fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="5" stroke-linecap="round"/>
+      <!-- 보조 하이라이트 -->
+      <path d="M 34 60 C 30 90, 28 130, 30 168"
+            fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="1.8" stroke-linecap="round"/>
+      <!-- sparkle 점 -->
+      <ellipse cx="22" cy="80" rx="2.2" ry="4.5" fill="rgba(255,255,255,0.85)"/>
+      <ellipse cx="30" cy="58" rx="1.2" ry="2.6" fill="rgba(255,255,255,0.8)"/>
 
-      <!-- 우측 깊은 그림자 (부피감) -->
-      <path d="M 92 56 Q 96 90, 96 150 Q 94 184, 88 200"
-            fill="none" stroke="rgba(0,0,0,0.30)" stroke-width="4" stroke-linecap="round"/>
+      <!-- 우측 부드러운 그림자 -->
+      <path d="M 90 56 C 94 90, 96 134, 94 172 C 92 196, 86 208, 80 212"
+            fill="none" stroke="rgba(0,0,0,0.26)" stroke-width="3.2" stroke-linecap="round"/>
 
       <!-- 발사구 (캡 안쪽 검은 구멍 — 캡 닫힐 때 살짝 보이는 그늘) -->
-      <ellipse cx="55" cy="28" rx="11" ry="2.6" fill="#1a0204" opacity="0.9"/>
-      <ellipse cx="55" cy="27.5" rx="7" ry="1.4" fill="#000"/>
+      <ellipse cx="55" cy="28" rx="10.5" ry="2.4" fill="#1a0204" opacity="0.85"/>
+      <ellipse cx="55" cy="27.6" rx="6.5" ry="1.2" fill="#000"/>
 
       <!-- =============== 라벨 (방패형 + 흰 테두리) =============== -->
       <!-- 흰 테두리 outer -->
@@ -450,7 +456,7 @@ function ketchupGunSVG() {
         Q 55 178, 40 168
         Q 24 152, 24 116
         Z"
-        fill="#ffffff" stroke="#3a0a08" stroke-width="1.4"/>
+        fill="#ffffff" stroke="#3a0a08" stroke-width="0.8"/>
       <!-- 라벨 inner (크림색) -->
       <path d="
         M 28 117
@@ -461,7 +467,7 @@ function ketchupGunSVG() {
         Q 55 173, 42 164
         Q 28 150, 28 117
         Z"
-        fill="url(#labelGrad)" stroke="#c8362f" stroke-width="0.6" opacity="0.95"/>
+        fill="url(#labelGrad)" stroke="#c8362f" stroke-width="0.45" opacity="0.95"/>
 
       <!-- KETCHUP -->
       <text x="55" y="108" text-anchor="middle"
@@ -473,40 +479,56 @@ function ketchupGunSVG() {
             fill="#c8362f" letter-spacing="1">ROULETTE</text>
 
       <!-- 토마토 아이콘 -->
-      <circle cx="55" cy="142" r="11" fill="url(#tomato)" stroke="#3a0a08" stroke-width="0.9"/>
+      <circle cx="55" cy="142" r="11" fill="url(#tomato)" stroke="#3a0a08" stroke-width="0.5"/>
       <!-- 토마토 광택 -->
       <ellipse cx="50" cy="138" rx="3.2" ry="1.8" fill="rgba(255,255,255,0.65)"/>
       <ellipse cx="51" cy="139.5" rx="1.4" ry="0.7" fill="rgba(255,255,255,0.8)"/>
       <!-- 토마토 잎 (꼭지) -->
       <path d="M 50 132 Q 55 128, 60 132 Q 58 134, 55 134 Q 52 134, 50 132 Z"
-            fill="#3aa83a" stroke="#1a5a1a" stroke-width="0.5" stroke-linejoin="round"/>
-      <path d="M 55 130 L 55 134" stroke="#1a5a1a" stroke-width="0.6"/>
+            fill="#3aa83a" stroke="#1a5a1a" stroke-width="0.3" stroke-linejoin="round"/>
+      <path d="M 55 130 L 55 134" stroke="#1a5a1a" stroke-width="0.4"/>
 
       <!-- IT'S DELICIOUS -->
       <text x="55" y="160" text-anchor="middle"
             font-family="'Bevan', serif" font-size="3.2"
             fill="#3a0a08" letter-spacing="0.8">IT'S DELICIOUS</text>
 
-      <!-- =============== 캡 (별도 그룹 — 발사 시 플립) =============== -->
-      <g class="bottle-cap-group" style="transform-box: view-box; transform-origin: 42px 28px;">
-        <!-- 캡 측면 (밴드, 살짝 어두움) -->
-        <path d="M 38 24 Q 40 30, 44 30 L 66 30 Q 70 30, 72 24 L 70 22 L 40 22 Z"
-              fill="url(#capSide)" stroke="#3a0a08" stroke-width="1.4" stroke-linejoin="round"/>
-        <!-- 캡 돔 (둥근 흰 모자) -->
+      <!-- =============== 캡 (화염형 / 위 좁고 아래 넓음, 끝에 작은 팁) =============== -->
+      <g class="bottle-cap-group" style="transform-box: view-box; transform-origin: 41px 28px;">
+        <!-- 캡 본체: 작은 팁 → 부드럽게 좁음 → 어깨 → 본체와 직접 만남 -->
         <path d="
-          M 40 22
-          Q 38 14, 44 6
-          Q 50 0, 55 0
-          Q 60 0, 66 6
-          Q 72 14, 70 22
+          M 55 0
+          C 52.5 0.4, 51 2.5, 50 5
+          C 48 11, 45 18, 43 23
+          C 41.5 26, 41 27.4, 41 28
+          L 69 28
+          C 69 27.4, 68.5 26, 67 23
+          C 65 18, 62 11, 60 5
+          C 59 2.5, 57.5 0.4, 55 0
           Z"
-          fill="url(#capGrad)" stroke="#3a0a08" stroke-width="1.6" stroke-linejoin="round"/>
-        <!-- 캡 광택 (둥근 highlight) -->
-        <path d="M 46 4 Q 50 2, 54 4 Q 51 12, 47 18"
-              fill="none" stroke="rgba(255,255,255,0.95)" stroke-width="2.2" stroke-linecap="round"/>
-        <ellipse cx="51" cy="6" rx="2" ry="1" fill="rgba(255,255,255,0.95)"/>
-        <!-- 캡 하단 그림자 라인 -->
-        <path d="M 41 28 Q 55 32, 69 28" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1.2" stroke-linecap="round"/>
+          fill="url(#capGrad)" stroke="#3a0a08" stroke-width="0.8" stroke-linejoin="round"/>
+        <!-- 캡 radial 광택 (mask 안쪽) -->
+        <path d="
+          M 55 0
+          C 52.5 0.4, 51 2.5, 50 5
+          C 48 11, 45 18, 43 23
+          C 41.5 26, 41 27.4, 41 28
+          L 69 28
+          C 69 27.4, 68.5 26, 67 23
+          C 65 18, 62 11, 60 5
+          C 59 2.5, 57.5 0.4, 55 0
+          Z"
+          fill="url(#capShine)"/>
+        <!-- 캡 좌측 부드러운 highlight 스트립 -->
+        <path d="M 50 4 C 47 10, 44.5 17, 43 24"
+              fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+        <!-- sparkle 점 (캡 끝 근처) -->
+        <ellipse cx="53" cy="3" rx="0.9" ry="1.6" fill="rgba(255,255,255,0.95)"/>
+        <!-- 캡 우측 옅은 그림자 -->
+        <path d="M 60 6 C 63 13, 65.5 20, 67 26"
+              fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- 캡-본체 만남부 자연스러운 음영 (둥근 베벨) -->
+        <path d="M 41 28 Q 55 30.4, 69 28" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="0.9" stroke-linecap="round"/>
       </g>
     </svg>
   `;
