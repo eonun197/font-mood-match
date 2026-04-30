@@ -366,7 +366,7 @@ function toasterFrontSVG(slotCount, opts = {}) {
 // 케찹통 — Heinz 스타일, 캡-본체 곡선 연결, 좌측 광택 + 우측 그림자, 발사구 강조
 function ketchupGunSVG() {
   return `
-    <svg viewBox="0 0 110 200" width="100%" height="100%">
+    <svg viewBox="0 0 110 210" width="100%" height="100%">
       <defs>
         <linearGradient id="bottleBody" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%"   stop-color="#5a0808"/>
@@ -375,89 +375,133 @@ function ketchupGunSVG() {
           <stop offset="82%"  stop-color="#8a1818"/>
           <stop offset="100%" stop-color="#5a0808"/>
         </linearGradient>
-        <linearGradient id="bottleCap" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"  stop-color="#fdf8e7"/>
+        <linearGradient id="bottleCap" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="#c8c2ad"/>
+          <stop offset="22%"  stop-color="#fdf8e7"/>
+          <stop offset="50%"  stop-color="#ffffff"/>
+          <stop offset="78%"  stop-color="#e6decb"/>
+          <stop offset="100%" stop-color="#a8a087"/>
+        </linearGradient>
+        <linearGradient id="capRing" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="#bdb7a0"/>
+          <stop offset="50%"  stop-color="#ffffff"/>
           <stop offset="100%" stop-color="#a8a087"/>
         </linearGradient>
       </defs>
 
-      <!-- 발사구 (검은 구멍 — 강조) -->
-      <ellipse cx="55" cy="2" rx="4" ry="2.2" fill="#000"/>
-      <ellipse cx="55" cy="2.5" rx="2.6" ry="1.2" fill="#2a0a04"/>
+      <!-- 발사구 (검은 구멍 — 더 크고 짙게) -->
+      <ellipse cx="55" cy="3" rx="5.6" ry="2.4" fill="#000"/>
+      <ellipse cx="55" cy="3" rx="3.6" ry="1.4" fill="#180204"/>
 
-      <!-- 흰 squeeze 캡 (콘) -->
-      <path d="M 55 0 L 62 22 L 48 22 Z"
-            fill="url(#bottleCap)" stroke="#3a0a08" stroke-width="2" stroke-linejoin="round"/>
-      <path d="M 51 10 Q 55 11, 59 10" stroke="#5a4a30" stroke-width="0.4" fill="none" opacity="0.7"/>
-      <path d="M 49 16 Q 55 17, 61 16" stroke="#5a4a30" stroke-width="0.4" fill="none" opacity="0.7"/>
+      <!-- 흰 squeeze 캡 (둥근 돔 + 가로 ridge) -->
+      <path d="M 47 3 Q 47 0, 55 0 Q 63 0, 63 3 L 64.5 22 L 45.5 22 Z"
+            fill="url(#bottleCap)" stroke="#3a0a08" stroke-width="1.6" stroke-linejoin="round"/>
+      <!-- 캡 가로 ridge (홈) -->
+      <line x1="47.5" y1="8"  x2="62.5" y2="8"  stroke="#7a7058" stroke-width="0.5" opacity="0.75"/>
+      <line x1="47"   y1="12" x2="63"   y2="12" stroke="#7a7058" stroke-width="0.5" opacity="0.75"/>
+      <line x1="46.5" y1="16" x2="63.5" y2="16" stroke="#7a7058" stroke-width="0.5" opacity="0.75"/>
+      <line x1="46"   y1="20" x2="64"   y2="20" stroke="#7a7058" stroke-width="0.5" opacity="0.75"/>
 
-      <!-- 캡 base ring (흰색, 캡보다 살짝 넓음, 본체 입구 감쌈) -->
-      <path d="M 44 22 Q 42 25, 44 28 L 66 28 Q 68 25, 66 22 Z"
-            fill="url(#bottleCap)" stroke="#3a0a08" stroke-width="1.5"/>
+      <!-- 캡 base 링 (흰 플라스틱, 캡보다 약간 넓음, 57 hint) -->
+      <path d="M 42 22 Q 41 26, 42 31 L 68 31 Q 69 26, 68 22 Z"
+            fill="url(#capRing)" stroke="#3a0a08" stroke-width="1.4"/>
+      <text x="55" y="28.5" text-anchor="middle"
+            font-family="'Bevan', serif" font-size="4.5"
+            fill="#7a7058" opacity="0.7" letter-spacing="0.6">57</text>
 
-      <!-- 본체 — 입구가 살짝 오목 들어갔다 어깨로 펼침 (concave 곡선 연결) -->
+      <!-- 좁은 빨간 neck (짧음) -->
+      <path d="M 44 31 L 66 31 L 64.5 39 L 45.5 39 Z"
+            fill="url(#bottleBody)" stroke="#3a0a08" stroke-width="1.6" stroke-linejoin="round"/>
+
+      <!-- 본체 + 어깨 한 덩어리 (자연스러운 곡선) -->
       <path d="
-        M 44 28
-        Q 42 32, 44 36
-        Q 32 40, 22 50
-        Q 14 60, 12 68
-        L 98 68
-        Q 96 60, 88 50
-        Q 78 40, 66 36
-        Q 68 32, 66 28
+        M 45.5 39
+        Q 28 44, 16 60
+        Q 10 66, 8 74
+        Q 6 110, 6 150
+        L 8 192
+        Q 10 206, 26 206
+        L 84 206
+        Q 100 206, 102 192
+        L 104 150
+        Q 104 110, 102 74
+        Q 100 66, 94 60
+        Q 82 44, 64.5 39
         Z"
-        fill="url(#bottleBody)" stroke="#3a0a08" stroke-width="2.2" stroke-linejoin="round"/>
-
-      <!-- 본체 (둥근 큰 squeeze 보틀) -->
-      <path d="M 12 68 Q 8 100, 8 140 L 10 184 Q 12 198, 28 198 L 82 198 Q 98 198, 100 184 L 102 140 Q 102 100, 98 68 Z"
-            fill="url(#bottleBody)" stroke="#3a0a08" stroke-width="2.5" stroke-linejoin="round"/>
+        fill="url(#bottleBody)" stroke="#3a0a08" stroke-width="2.4" stroke-linejoin="round"/>
 
       <!-- 좌측 강한 흰 하이라이트 (광택 플라스틱) -->
-      <path d="M 22 40 Q 18 60, 16 100 Q 16 140, 20 175"
-            fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="3.5" stroke-linecap="round"/>
-      <!-- 좌측 보조 하이라이트 (가까운 위치, 옅음) -->
-      <path d="M 30 50 Q 26 80, 24 120"
-            fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M 22 52 Q 16 80, 14 120 Q 14 160, 18 188"
+            fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="4" stroke-linecap="round"/>
+      <!-- 좌측 보조 하이라이트 -->
+      <path d="M 30 60 Q 26 90, 24 130"
+            fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="1.6" stroke-linecap="round"/>
 
-      <!-- 우측 그림자 (반대편 빵빵한 부피감) -->
-      <path d="M 86 42 Q 90 65, 92 105 Q 92 145, 88 175"
-            fill="none" stroke="rgba(0, 0, 0, 0.30)" stroke-width="2.8" stroke-linecap="round"/>
+      <!-- 우측 그림자 -->
+      <path d="M 88 54 Q 92 82, 94 122 Q 94 162, 90 188"
+            fill="none" stroke="rgba(0,0,0,0.34)" stroke-width="3" stroke-linecap="round"/>
 
-      <!-- Heinz 방패형 라벨 -->
+      <!-- Heinz keystone(방패형) 라벨 -->
       <path d="
-        M 24 86
-        L 24 140
-        Q 24 144, 28 144
-        L 82 144
-        Q 86 144, 86 140
-        L 86 86
-        Q 86 82, 82 82
-        L 64 82
-        L 60 78
-        L 50 78
-        L 46 82
-        L 28 82
-        Q 24 82, 24 86
+        M 22 92
+        L 22 158
+        Q 22 162, 26 162
+        L 84 162
+        Q 88 162, 88 158
+        L 88 92
+        Q 88 88, 84 88
+        L 64 88
+        L 60 84
+        L 50 84
+        L 46 88
+        L 26 88
+        Q 22 88, 22 92
         Z"
         fill="#fff5e0" stroke="#3a0a08" stroke-width="1.5"/>
 
-      <!-- 라벨 텍스트 -->
-      <text x="55" y="96" text-anchor="middle"
-            font-family="'Bevan', serif" font-size="8"
-            fill="#3a0a08" letter-spacing="1.5">HEINZ</text>
-      <text x="55" y="113" text-anchor="middle"
-            font-family="'Bevan', serif" font-size="13"
-            fill="#c8362f" letter-spacing="2">KETCHUP</text>
-      <text x="55" y="125" text-anchor="middle"
+      <!-- 라벨 안쪽 보더 -->
+      <path d="
+        M 25 94
+        L 25 156
+        Q 25 159, 28 159
+        L 82 159
+        Q 85 159, 85 156
+        L 85 94
+        Q 85 91, 82 91
+        L 63 91
+        L 59 87
+        L 51 87
+        L 47 91
+        L 28 91
+        Q 25 91, 25 94
+        Z"
+        fill="none" stroke="#c8362f" stroke-width="0.5" opacity="0.55"/>
+
+      <!-- 라벨 텍스트: HEINZ -->
+      <text x="55" y="103" text-anchor="middle"
+            font-family="'Bevan', serif" font-size="9"
+            fill="#3a0a08" letter-spacing="1.8">HEINZ</text>
+      <line x1="32" y1="108" x2="78" y2="108" stroke="#3a0a08" stroke-width="0.4" opacity="0.6"/>
+      <!-- TOMATO -->
+      <text x="55" y="118" text-anchor="middle"
             font-family="'Bevan', serif" font-size="6"
-            fill="#3a0a08" letter-spacing="1">★ EST. 1869 ★</text>
-      <text x="55" y="135" text-anchor="middle"
+            fill="#3a0a08" letter-spacing="1">TOMATO</text>
+      <!-- KETCHUP (중심) -->
+      <text x="55" y="131" text-anchor="middle"
+            font-family="'Bevan', serif" font-size="11"
+            fill="#c8362f" letter-spacing="1.5">KETCHUP</text>
+      <!-- 57 VARIETIES -->
+      <text x="55" y="143" text-anchor="middle"
             font-family="'Bevan', serif" font-size="5"
-            fill="#3a0a08" letter-spacing="0.5">PURE TOMATO</text>
+            fill="#3a0a08" letter-spacing="0.8">57 VARIETIES</text>
+      <!-- EST 1869 -->
+      <text x="55" y="153" text-anchor="middle"
+            font-family="'Bevan', serif" font-size="4"
+            fill="#3a0a08" letter-spacing="0.5">★ EST. 1869 ★</text>
 
       <!-- 작은 녹/긁힘 -->
-      <circle cx="80" cy="65" r="1.2" fill="#a85d28" opacity="0.4"/>
-      <circle cx="28" cy="170" r="1" fill="#a85d28" opacity="0.35"/>
+      <circle cx="82" cy="78" r="1.2" fill="#a85d28" opacity="0.4"/>
+      <circle cx="28" cy="186" r="1" fill="#a85d28" opacity="0.35"/>
     </svg>
   `;
 }
