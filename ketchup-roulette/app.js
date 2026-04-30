@@ -1196,16 +1196,19 @@ function showResult() {
   if (n === 0) {
     const li = document.createElement('li');
     li.className = 'no-winner';
-    li.innerHTML = '<span class="winner-name">— NO ONE WAS COVERED IN KETCHUP —</span>';
+    li.innerHTML = '<div class="winner-card"><span class="winner-name">— NO ONE WAS COVERED IN KETCHUP —</span></div>';
     list.appendChild(li);
   } else {
-    state.hitNames.forEach(w => {
+    state.hitNames.forEach((w, i) => {
       const li = document.createElement('li');
+      li.style.setProperty('--idx', i);
       li.innerHTML = `
-        <div class="mugshot">${breadMugshotSVG()}</div>
-        <div class="winner-info">
-          <span class="winner-no">No.${w.idx + 1}</span>
-          <span class="winner-name">${escapeHTML(w.name)}</span>
+        <div class="winner-card">
+          <div class="mugshot">${breadMugshotSVG()}</div>
+          <div class="winner-info">
+            <span class="winner-no">No.${w.idx + 1}</span>
+            <span class="winner-name">${escapeHTML(w.name)}</span>
+          </div>
         </div>
       `;
       list.appendChild(li);

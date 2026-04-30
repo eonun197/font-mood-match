@@ -1454,6 +1454,23 @@ body::after {
 .wanted-poster {
   text-align: center;
   padding: 22px 28px 18px;        /* 밀도 극대화 */
+  transform-origin: center center;
+}
+
+/* 결과 화면 등장 — 포스터 퐁! (탄성 바운스) */
+#screen-result[data-active="true"] .wanted-poster {
+  animation: posterPop 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+}
+@keyframes posterPop {
+  0%   { transform: scale(0)   rotate(-3deg); opacity: 0; }
+  60%  { transform: scale(1.10) rotate(0deg);  opacity: 1; }
+  100% { transform: scale(1)   rotate(0deg);  opacity: 1; }
+}
+
+/* 한 판 더 버튼도 식빵들 다 등장한 뒤 살짝 등장 */
+#screen-result[data-active="true"] .restart-stamp {
+  animation: posterPop 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+  animation-delay: 1.0s;
 }
 
 /* WANTED — 단순한 슬랩세리프 (Bevan), 폰트 사이즈 캡 */
@@ -1651,7 +1668,6 @@ body::after {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
   background: transparent;
   border: none;
   padding: 0;
@@ -1659,6 +1675,36 @@ body::after {
   width: 160px;
   position: relative;
   transition: transform .2s ease;
+}
+
+/* winner-card — li의 zigzag transform과 분리된 등장 애니메이션 wrapper */
+.winner-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  transform-origin: center bottom;
+}
+
+/* 식빵 시간차 '퐁!' — 좌상단부터 순서대로 stagger */
+#screen-result[data-active="true"] .winner-list .winner-card {
+  animation: cardPop 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+  animation-delay: calc(0.45s + var(--idx, 0) * 0.05s);
+}
+/* 짝수 인덱스는 반대 방향에서 튀어나옴 (역동성 ↑) */
+#screen-result[data-active="true"] .winner-list li:nth-child(even) .winner-card {
+  animation-name: cardPopAlt;
+}
+@keyframes cardPop {
+  0%   { transform: scale(0)   rotate(-9deg); opacity: 0; }
+  60%  { transform: scale(1.14) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1)   rotate(0);    opacity: 1; }
+}
+@keyframes cardPopAlt {
+  0%   { transform: scale(0)   rotate(9deg); opacity: 0; }
+  60%  { transform: scale(1.14) rotate(-2deg); opacity: 1; }
+  100% { transform: scale(1)   rotate(0);    opacity: 1; }
 }
 
 /* === 인원별 사이즈 단계 === */
