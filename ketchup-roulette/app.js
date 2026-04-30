@@ -366,21 +366,10 @@ function toasterFrontSVG(slotCount, opts = {}) {
 // 케찹통 — Heinz 스타일, 캡-본체 곡선 연결, 좌측 광택 + 우측 그림자, 발사구 강조
 function ketchupGunSVG(opts = {}) {
   const withCap = !!opts.withCap;
-  const viewBox = withCap ? '0 0 110 220' : '0 12 110 208';
+  const viewBox = withCap ? '0 -40 110 260' : '0 12 110 208';
 
-  // 본체 path: withCap 이면 호리병 본체만, 까진 상태면 짧은 스파우트(주둥이)+본체 결합
-  const bottlePath = withCap
-    ? `
-        M 41 28
-        C 32 36, 22 52, 16 76
-        C 10 102, 8 138, 10 168
-        C 12 192, 24 210, 40 214
-        C 50 216, 60 216, 70 214
-        C 86 210, 98 192, 100 168
-        C 102 138, 100 102, 94 76
-        C 88 52, 78 36, 69 28
-        Z`
-    : `
+  // 본체 path — 항상 spout 포함 (캡 있을 땐 캡이 spout 가림, 뚜껑 뿅 빠지면 노출)
+  const bottlePath = `
         M 45 18
         Q 45 16, 47 16
         L 63 16
@@ -456,21 +445,17 @@ function ketchupGunSVG(opts = {}) {
         <!-- 우측 부드러운 그림자 -->
         <path d="M 90 56 C 94 90, 96 134, 94 172 C 92 196, 86 208, 80 212"
               fill="none" stroke="rgba(0,0,0,0.26)" stroke-width="3.2" stroke-linecap="round"/>
-        ${withCap ? '' : `
         <!-- 스파우트 좌측 하이라이트 -->
         <path d="M 48 19 L 48 25" stroke="rgba(255,255,255,0.7)" stroke-width="1.4" stroke-linecap="round"/>
         <!-- 스파우트 우측 그림자 -->
         <path d="M 62 19 L 62 25" stroke="rgba(0,0,0,0.22)" stroke-width="1" stroke-linecap="round"/>
-        `}
       </g>
 
-      ${withCap ? '' : `
-      <!-- 발사구 (스파우트 상단 검은 구멍) -->
+      <!-- 발사구 (스파우트 상단 검은 구멍 — 캡 있을 땐 캡이 가림) -->
       <ellipse cx="55" cy="16" rx="9.5" ry="2.2" fill="#0a0202"/>
       <ellipse cx="55" cy="15.6" rx="6.5" ry="1.1" fill="#000"/>
       <!-- 입구 안쪽 살짝 빛 -->
       <ellipse cx="55" cy="17" rx="7" ry="0.5" fill="rgba(255,255,255,0.18)"/>
-      `}
 
       <!-- =============== 라벨 (방패형 + 흰 테두리) =============== -->
       <!-- 흰 테두리 outer -->
@@ -521,35 +506,37 @@ function ketchupGunSVG(opts = {}) {
             fill="#3a0a08" letter-spacing="0.8">IT'S DELICIOUS</text>
 
       ${withCap ? `
-      <!-- =============== 캡 닫힘 (스핀 전용 정적) =============== -->
-      <path d="
-        M 55 0
-        C 52.5 0.4, 51 2.5, 50 5
-        C 48 11, 45 18, 43 23
-        C 41.5 26, 41 27.4, 41 28
-        L 69 28
-        C 69 27.4, 68.5 26, 67 23
-        C 65 18, 62 11, 60 5
-        C 59 2.5, 57.5 0.4, 55 0
-        Z"
-        fill="url(#capGrad)" stroke="#3a0a08" stroke-width="0.8" stroke-linejoin="round"/>
-      <path d="
-        M 55 0
-        C 52.5 0.4, 51 2.5, 50 5
-        C 48 11, 45 18, 43 23
-        C 41.5 26, 41 27.4, 41 28
-        L 69 28
-        C 69 27.4, 68.5 26, 67 23
-        C 65 18, 62 11, 60 5
-        C 59 2.5, 57.5 0.4, 55 0
-        Z"
-        fill="url(#capShine)"/>
-      <path d="M 50 4 C 47 10, 44.5 17, 43 24"
-            fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
-      <ellipse cx="53" cy="3" rx="0.9" ry="1.6" fill="rgba(255,255,255,0.95)"/>
-      <path d="M 60 6 C 63 13, 65.5 20, 67 26"
-            fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1.2" stroke-linecap="round"/>
-      <path d="M 41 28 Q 55 30.4, 69 28" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="0.9" stroke-linecap="round"/>
+      <!-- =============== 캡 닫힘 (뿅 빠질 수 있게 그룹화) =============== -->
+      <g class="bottle-cap" style="transform-box: view-box; transform-origin: 55px 28px;">
+        <path d="
+          M 55 0
+          C 52.5 0.4, 51 2.5, 50 5
+          C 48 11, 45 18, 43 23
+          C 41.5 26, 41 27.4, 41 28
+          L 69 28
+          C 69 27.4, 68.5 26, 67 23
+          C 65 18, 62 11, 60 5
+          C 59 2.5, 57.5 0.4, 55 0
+          Z"
+          fill="url(#capGrad)" stroke="#3a0a08" stroke-width="0.8" stroke-linejoin="round"/>
+        <path d="
+          M 55 0
+          C 52.5 0.4, 51 2.5, 50 5
+          C 48 11, 45 18, 43 23
+          C 41.5 26, 41 27.4, 41 28
+          L 69 28
+          C 69 27.4, 68.5 26, 67 23
+          C 65 18, 62 11, 60 5
+          C 59 2.5, 57.5 0.4, 55 0
+          Z"
+          fill="url(#capShine)"/>
+        <path d="M 50 4 C 47 10, 44.5 17, 43 24"
+              fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+        <ellipse cx="53" cy="3" rx="0.9" ry="1.6" fill="rgba(255,255,255,0.95)"/>
+        <path d="M 60 6 C 63 13, 65.5 20, 67 26"
+              fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M 41 28 Q 55 30.4, 69 28" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="0.9" stroke-linecap="round"/>
+      </g>
       ` : ''}
 
     </svg>
@@ -1000,7 +987,7 @@ async function startStandoff() {
 
   // 재진입 대비 초기화
   panelTL.classList.remove('enter', 'click');
-  panelBR.classList.remove('enter', 'spin');
+  panelBR.classList.remove('enter', 'pop');
   diag.classList.remove('enter');
   flashEl.classList.remove('flash');
 
@@ -1019,16 +1006,13 @@ async function startStandoff() {
   diag.classList.add('enter');
   await sleep(620);
 
-  // 2) 좌상단 — 레버 click + 집중선 + 먼지
+  // 2) 같은 박자에! 토스터 찰칵 + 케찹 뚜껑 뿅
   panelTL.classList.add('click');
+  panelBR.classList.add('pop');
   shakeCamera(true);
 
-  // 살짝 늦게 우하단 — 케찹통 피젯 스핀
-  await sleep(180);
-  panelBR.classList.add('spin');
-
-  // 3) 스핀 완전 정지 + settlement 후 잠깐 정적 (1.2s + 여유 350ms)
-  await sleep(1550);
+  // 3) 양쪽 모션(lever .42s + cap .30+.60=.90s) 종료 + 정적 hold
+  await sleep(1500);
 
   // 4) 마무리 플래시 → 본 게임 진입
   flashEl.classList.add('flash');

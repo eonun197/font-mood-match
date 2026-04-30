@@ -1027,7 +1027,7 @@ body::after {
   100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
 }
 
-/* ====== 우하단: 케찹통 스핀 (3D 원근 + 잔상) ====== */
+/* ====== 우하단: 케찹통 등장 + 뚜껑 뿅 빠짐 ====== */
 .bottle-spin {
   position: absolute;
   right: 8%;
@@ -1036,85 +1036,58 @@ body::after {
   max-width: 360px;
   height: auto;
   z-index: 6;
-  transform-origin: 50% 50%;
-  transform-box: border-box;
   opacity: 0;
   display: flex;
   justify-content: center;
-  will-change: transform, filter;
+  filter: drop-shadow(0 8px 16px rgba(20, 4, 4, 0.4));
 }
 .bottle-spin svg {
   width: 100%;
   height: auto;
+  overflow: visible;
 }
-.panel-br.spin .bottle-spin {
-  animation: bottleSpin 1.20s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+/* 본체 등장 (페이드 + 살짝 스케일 업) */
+.panel-br.pop .bottle-spin {
+  animation: bottleAppear .42s cubic-bezier(.3, 1.4, .5, 1) forwards;
 }
-@keyframes bottleSpin {
-  0%   {
-    opacity: 0;
-    transform: rotateZ(0deg) rotateX(0deg) rotateY(0deg) scale(0.7);
-    filter: blur(0) drop-shadow(0 4px 8px rgba(20, 4, 4, 0.3));
-  }
-  8%   {
-    opacity: 1;
-    transform: rotateZ(180deg) rotateX(3deg) rotateY(-4deg) scale(1);
-    filter: blur(2.5px) drop-shadow(0 0 14px rgba(230, 52, 42, 0.7));
-  }
-  28%  {
-    opacity: 1;
-    transform: rotateZ(560deg) rotateX(-4deg) rotateY(5deg) scale(1);
-    filter: blur(3.5px) drop-shadow(0 0 20px rgba(230, 52, 42, 0.9));
-  }
-  55%  {
-    opacity: 1;
-    transform: rotateZ(840deg) rotateX(3deg) rotateY(-3deg) scale(1);
-    filter: blur(2px) drop-shadow(0 0 12px rgba(230, 52, 42, 0.55));
-  }
-  80%  {
-    opacity: 1;
-    transform: rotateZ(1010deg) rotateX(-2deg) rotateY(2deg) scale(1);
-    filter: blur(0.8px) drop-shadow(0 0 6px rgba(230, 52, 42, 0.3));
-  }
-  92%  {
-    opacity: 1;
-    /* 관성 — 목표 1080°를 살짝 지나침 (overshoot) */
-    transform: rotateZ(1086deg) rotateX(0deg) rotateY(0deg) scale(1);
-    filter: blur(0) drop-shadow(0 4px 10px rgba(40, 4, 4, 0.4));
-  }
-  97%  {
-    /* 반동 — 반대로 살짝 튕김 */
-    transform: rotateZ(1078deg) rotateX(0deg) rotateY(0deg) scale(1);
-  }
-  100% {
-    opacity: 1;
-    transform: rotateZ(1080deg) rotateX(0deg) rotateY(0deg) scale(1);
-    filter: blur(0) drop-shadow(0 6px 14px rgba(40, 4, 4, 0.4));
-  }
+@keyframes bottleAppear {
+  0%   { opacity: 0; transform: scale(0.8) translateY(20px); }
+  100% { opacity: 1; transform: scale(1)   translateY(0); }
 }
 
-/* 우하단 스피드 호 (잔상) */
+/* 뚜껑 뿅! — 토스터 찰칵과 같은 박자 (지연 0.3s 후 발사 모먼트와 일치) */
+.panel-br.pop .bottle-cap {
+  animation: capPop .60s cubic-bezier(.18, 1.5, .35, 1) .30s forwards;
+}
+@keyframes capPop {
+  0%   { transform: translateY(0)    rotate(0deg)   scale(1);    opacity: 1; }
+  18%  { transform: translateY(-3px) rotate(-5deg)  scale(1.08); opacity: 1; }   /* 짧은 압축/긴장 */
+  55%  { transform: translateY(-32px) rotate(-28deg) scale(0.96); opacity: 0.95; }
+  100% { transform: translateY(-70px) rotate(-55deg) scale(0.62); opacity: 0; }
+}
+
+/* 우하단 — 뚜껑 뿅 순간 burst (작은 충격선) */
 .speed-arcs {
   position: absolute;
-  right: 8%;
-  bottom: 8%;
-  width: 36%;
+  right: 22%;
+  bottom: 60%;
+  width: 14%;
   aspect-ratio: 1 / 1;
-  max-width: 360px;
+  max-width: 120px;
   border-radius: 50%;
-  border: 4px dashed rgba(255,255,255,0.6);
+  background: radial-gradient(circle, transparent 28%, rgba(255,255,255,0.85) 30%, transparent 35%, rgba(255,245,220,0.7) 38%, transparent 44%);
   opacity: 0;
-  transform: scale(0.6);
-  z-index: 5;
+  transform: scale(0.4);
+  z-index: 7;
   pointer-events: none;
 }
-.panel-br.spin .speed-arcs {
-  animation: speedArcsAnim 1.0s ease-out forwards;
+.panel-br.pop .speed-arcs {
+  animation: capPopBurst .45s ease-out .30s forwards;
 }
-@keyframes speedArcsAnim {
-  0%   { opacity: 0; transform: scale(0.6) rotate(0); }
-  35%  { opacity: 0.85; transform: scale(1.1) rotate(220deg); }
-  100% { opacity: 0; transform: scale(1.45) rotate(640deg); }
+@keyframes capPopBurst {
+  0%   { opacity: 0; transform: scale(0.4); }
+  35%  { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(1.8); }
 }
 
 /* ====== 마무리 플래시 ====== */
