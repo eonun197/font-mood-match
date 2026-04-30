@@ -880,7 +880,7 @@ body::after {
 .panel-tl {
   clip-path: polygon(0 0, 100% 0, 100% 32%, 0 68%);
   transform: translate(-100%, -10%);
-  transition: transform .28s cubic-bezier(.4, 1.4, .5, 1);
+  transition: transform .42s cubic-bezier(.4, 1.4, .5, 1);
 }
 .panel-tl.enter { transform: translate(0, 0); }
 
@@ -888,7 +888,7 @@ body::after {
 .panel-br {
   clip-path: polygon(100% 32%, 100% 100%, 0 100%, 0 68%);
   transform: translate(100%, 10%);
-  transition: transform .28s cubic-bezier(.4, 1.4, .5, 1);
+  transition: transform .42s cubic-bezier(.4, 1.4, .5, 1);
   perspective: 1400px;
   perspective-origin: 70% 70%;
 }
@@ -924,7 +924,7 @@ body::after {
   stroke-dasharray: 1500;
   stroke-dashoffset: 1500;
   stroke-width: 8;
-  transition: stroke-dashoffset .35s cubic-bezier(.4, 1.4, .5, 1);
+  transition: stroke-dashoffset .55s cubic-bezier(.4, 1.4, .5, 1);
 }
 .diagonal-svg.enter line {
   stroke-dashoffset: 0;
@@ -1127,11 +1127,12 @@ body::after {
   pointer-events: none;
 }
 .comic-flash.flash {
-  animation: comicFlashFinal .42s ease-out forwards;
+  animation: comicFlashFinal .60s ease-out forwards;
 }
 @keyframes comicFlashFinal {
   0%   { opacity: 0; }
-  35%  { opacity: 1; }
+  30%  { opacity: 1; }
+  60%  { opacity: 1; }
   100% { opacity: 0; }
 }
 

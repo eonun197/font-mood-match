@@ -1013,27 +1013,27 @@ async function startStandoff() {
   // reflow
   void panelTL.offsetWidth;
 
-  // 1) 패널 + 사선 입장
+  // 1) 패널 + 사선 입장 (.42s 슬라이드 + .55s 사선)
   panelTL.classList.add('enter');
   panelBR.classList.add('enter');
   diag.classList.add('enter');
-  await sleep(260);
+  await sleep(620);
 
   // 2) 좌상단 — 레버 click + 집중선 + 먼지
   panelTL.classList.add('click');
   shakeCamera(true);
 
-  // 살짝 늦게 우하단 — 케찹통 핑그르르 스핀 (3D 원근 + 빨간 잔상)
-  await sleep(80);
+  // 살짝 늦게 우하단 — 케찹통 피젯 스핀
+  await sleep(180);
   panelBR.classList.add('spin');
 
-  // 3) 스핀 완전 정지까지 대기 (1.2s + cushion, settlement 반동 포함)
-  await sleep(1240);
+  // 3) 스핀 완전 정지 + settlement 후 잠깐 정적 (1.2s + 여유 350ms)
+  await sleep(1550);
 
   // 4) 마무리 플래시 → 본 게임 진입
   flashEl.classList.add('flash');
   setupAction();
-  await sleep(220);
+  await sleep(380);
   showScreen('action');
 }
 
