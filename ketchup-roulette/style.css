@@ -967,32 +967,57 @@ body::after {
   100% { transform: translateY(146px); }   /* LOCK */
 }
 
-/* 집중선 (action lines, 좌상단 패널 안에서 폭발) */
+/* 먼지 구름 (서부극 흙먼지) — 레버 철컥과 동시 폭발 */
 .action-lines {
   position: absolute;
-  left: 12%;
-  top: 12%;
-  width: 60%;
-  height: 60%;
-  background: repeating-conic-gradient(from 0deg at 50% 50%,
-    transparent 0deg 5deg,
-    #1a0a08 5deg 8deg);
-  -webkit-mask: radial-gradient(circle at 50% 50%, transparent 22%, black 55%, transparent 95%);
-          mask: radial-gradient(circle at 50% 50%, transparent 22%, black 55%, transparent 95%);
+  left: 4%;
+  top: 8%;
+  width: 64%;
+  height: 64%;
+  background:
+    radial-gradient(ellipse at 28% 30%, rgba(232, 210, 175, 0.55), transparent 32%),
+    radial-gradient(ellipse at 72% 26%, rgba(208, 180, 140, 0.50), transparent 36%),
+    radial-gradient(ellipse at 32% 74%, rgba(190, 158, 115, 0.50), transparent 34%),
+    radial-gradient(ellipse at 75% 70%, rgba(178, 145, 100, 0.45), transparent 38%),
+    radial-gradient(ellipse at 50% 50%,
+      rgba(170, 138, 95, 0.6),
+      rgba(150, 115, 75, 0.35) 35%,
+      rgba(120, 88, 55, 0.12) 60%,
+      transparent 85%);
+  border-radius: 50%;
   opacity: 0;
-  transform: scale(0.4);
+  transform: scale(0.22);
   transform-origin: center;
   z-index: 4;
   pointer-events: none;
+  filter: blur(6px);
+  mix-blend-mode: multiply;
+}
+/* 안쪽 코어 — 더 짙은 먼지 덩어리로 깊이감 */
+.action-lines::before {
+  content: "";
+  position: absolute;
+  inset: 18%;
   border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(110, 78, 45, 0.55),
+    rgba(90, 62, 35, 0.25) 45%,
+    transparent 75%);
+  filter: blur(5px);
+  mix-blend-mode: multiply;
 }
 .panel-tl.click .action-lines {
-  animation: actionLinesBurst .55s ease-out forwards;
+  animation-name: dustCloudBurst;
+  animation-duration: .55s;
+  animation-timing-function: cubic-bezier(.18, .85, .28, 1);
+  animation-fill-mode: forwards;
 }
-@keyframes actionLinesBurst {
-  0%   { opacity: 0; transform: scale(0.4) rotate(0); }
-  35%  { opacity: 0.95; transform: scale(1.1) rotate(15deg); }
-  100% { opacity: 0.7; transform: scale(1.45) rotate(35deg); }
+@keyframes dustCloudBurst {
+  0%   { opacity: 0;    transform: scale(0.22) rotate(0deg); }
+  20%  { opacity: 0.7;  transform: scale(0.55) rotate(6deg); }
+  55%  { opacity: 1;    transform: scale(1.08) rotate(-4deg); }   /* SYNC: 레버 철컥 정점 */
+  78%  { opacity: 0.5;  transform: scale(1.45) rotate(10deg); }
+  100% { opacity: 0;    transform: scale(1.75) rotate(20deg); }
 }
 
 /* 먼지 puff */
