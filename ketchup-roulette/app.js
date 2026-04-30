@@ -950,8 +950,6 @@ async function startStandoff() {
   const panelTL  = document.querySelector('.panel-tl');
   const panelBR  = document.querySelector('.panel-br');
   const diag     = document.querySelector('.diagonal-line');
-  const clickSfx = document.querySelector('.click-sfx');
-  const spinSfx  = document.querySelector('.spin-sfx');
   const flashEl  = document.getElementById('comicFlash');
   const leverEl  = document.getElementById('leverCloseup');
   const bottleEl = document.getElementById('bottleSpin');
@@ -960,8 +958,6 @@ async function startStandoff() {
   panelTL.classList.remove('enter', 'click');
   panelBR.classList.remove('enter', 'spin');
   diag.classList.remove('enter');
-  clickSfx.classList.remove('show');
-  spinSfx.classList.remove('show');
   flashEl.classList.remove('flash');
 
   // SVG 주입 (매 회 신규)
@@ -979,18 +975,16 @@ async function startStandoff() {
   diag.classList.add('enter');
   await sleep(260);
 
-  // 2) 좌상단 — 레버 click + 집중선 + 먼지 + SFX
+  // 2) 좌상단 — 레버 click + 집중선 + 먼지
   panelTL.classList.add('click');
-  clickSfx.classList.add('show');
   shakeCamera(true);
 
-  // 살짝 늦게 우하단 — 케찹통 360° 스핀 + SFX
+  // 살짝 늦게 우하단 — 케찹통 핑그르르 스핀 (ease-out 깔끔히 정지)
   await sleep(80);
   panelBR.classList.add('spin');
-  spinSfx.classList.add('show');
 
-  // 3) 양쪽 모션 종료 대기
-  await sleep(760);
+  // 3) 스핀 완전 정지까지 대기 (.85s + cushion)
+  await sleep(880);
 
   // 4) 마무리 플래시 → 본 게임 진입
   flashEl.classList.add('flash');

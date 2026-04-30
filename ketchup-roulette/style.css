@@ -1010,14 +1010,14 @@ body::after {
   filter: drop-shadow(0 12px 24px rgba(20, 4, 4, 0.5));
 }
 .panel-br.spin .bottle-spin {
-  animation: bottleSpin .80s cubic-bezier(.3, 0, .5, 1) forwards;
+  animation: bottleSpin .85s cubic-bezier(.12, .82, .24, 1) forwards;
 }
 @keyframes bottleSpin {
-  0%   { opacity: 0; transform: rotate(-30deg) scale(0.5); filter: blur(0); }
-  18%  { opacity: 1; transform: rotate(80deg)  scale(1);   filter: blur(2px); }
-  50%  { opacity: 1; transform: rotate(220deg) scale(1.06); filter: blur(3.5px); }
-  82%  { opacity: 1; transform: rotate(360deg) scale(1);   filter: blur(0); }
-  100% { opacity: 1; transform: rotate(360deg) scale(1);   filter: blur(0); }
+  0%   { opacity: 0; transform: rotate(0deg)   scale(0.7); filter: blur(0); }
+  12%  { opacity: 1; transform: rotate(120deg) scale(1);   filter: blur(2.5px); }
+  55%  { opacity: 1; transform: rotate(560deg) scale(1);   filter: blur(2px); }
+  85%  { opacity: 1; transform: rotate(700deg) scale(1);   filter: blur(0.6px); }
+  100% { opacity: 1; transform: rotate(720deg) scale(1);   filter: blur(0); }
 }
 
 /* 우하단 스피드 호 (잔상) */
@@ -1042,48 +1042,6 @@ body::after {
   0%   { opacity: 0; transform: scale(0.6) rotate(0); }
   40%  { opacity: 0.85; transform: scale(1.1) rotate(180deg); }
   100% { opacity: 0; transform: scale(1.4) rotate(540deg); }
-}
-
-/* ====== SFX 텍스트 ====== */
-.comic-sfx {
-  position: absolute;
-  font-family: "Bevan", serif;
-  color: #ffd200;
-  -webkit-text-stroke: 4px #1a0a08;
-  letter-spacing: 0.04em;
-  z-index: 20;
-  opacity: 0;
-  pointer-events: none;
-  text-shadow: 6px 6px 0 #1a0a08;
-}
-.click-sfx {
-  font-size: clamp(48px, 8vw, 96px);
-  left: 28%;
-  top: 22%;
-  transform: rotate(-12deg) scale(0);
-}
-.spin-sfx {
-  font-size: clamp(48px, 8vw, 96px);
-  right: 30%;
-  bottom: 22%;
-  transform: rotate(8deg) scale(0);
-  color: #fff5e0;
-}
-.click-sfx.show {
-  animation: sfxPopL .45s cubic-bezier(.4, 1.6, .5, 1) forwards;
-}
-@keyframes sfxPopL {
-  0%   { opacity: 0; transform: rotate(-12deg) scale(0); }
-  60%  { opacity: 1; transform: rotate(-12deg) scale(1.25); }
-  100% { opacity: 1; transform: rotate(-12deg) scale(1); }
-}
-.spin-sfx.show {
-  animation: sfxPopR .45s cubic-bezier(.4, 1.6, .5, 1) forwards;
-}
-@keyframes sfxPopR {
-  0%   { opacity: 0; transform: rotate(8deg) scale(0); }
-  60%  { opacity: 1; transform: rotate(8deg) scale(1.25); }
-  100% { opacity: 1; transform: rotate(8deg) scale(1); }
 }
 
 /* ====== 마무리 플래시 ====== */
